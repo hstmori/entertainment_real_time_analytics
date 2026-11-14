@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/contracts/subscription-v1.schema.json",
+  "title": "Entertainment Subscription Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "correlation_id", "event_version", "occurred_at", "source", "subscription_id", "customer_id", "plan_id", "subscription_status", "valid_from"],
+  "properties": {
+    "event_id": {"type": "string", "format": "uuid"},
+    "correlation_id": {"type": "string", "format": "uuid"},
+    "event_version": {"const": 1},
+    "occurred_at": {"type": "string", "format": "date-time"},
+    "source": {"type": "string", "minLength": 1, "maxLength": 100},
+    "subscription_id": {"type": "string", "minLength": 1, "maxLength": 100},
+    "customer_id": {"type": "string", "minLength": 1, "maxLength": 100},
+    "plan_id": {"type": "string", "minLength": 1, "maxLength": 100},
+    "subscription_status": {
+      "type": "string",
+      "enum": ["started", "renewed", "upgraded", "downgraded", "paused", "cancelled", "expired"]
+    },
+    "valid_from": {"type": "string", "format": "date-time"},
+    "valid_to": {"type": ["string", "null"], "format": "date-time"},
+    "amount": {"type": ["number", "null"], "minimum": 0},
+    "currency": {"type": ["string", "null"], "pattern": "^[A-Z]{3}$"}
+  }
+}
+

@@ -1,0 +1,167 @@
+/// Governed Gold export: event_performance.csv. Definitions: docs/gold-metric-definitions.md.
+table EventPerformance
+	lineageTag: 0ec1a3fe-bad9-4086-87ee-ce64569d413d
+
+	measure 'Sự kiện live' = DISTINCTCOUNT(EventPerformance[entertainment_event_id])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 99fba449-6140-4b5f-837d-062ca4389234
+
+	measure 'Vé live xác nhận' = SUM(EventPerformance[confirmed_tickets])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: c56be84a-fb93-4d7d-97af-39ef062c5e30
+
+	measure Check-in = SUM(EventPerformance[checked_in])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: f438358d-05e1-4ca4-addd-4fcd344fe028
+
+	measure No-show = SUM(EventPerformance[no_show])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 0c278e4d-bef4-449a-af6d-7b512d9032cc
+
+	measure 'Tỷ lệ tham dự proxy' = DIVIDE([Check-in],SUM(EventPerformance[attendance_records]))
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: ca6fe824-c0da-4d35-aae9-4b847be76224
+
+	column entertainment_event_id
+		dataType: string
+		lineageTag: 3cef8af0-54f8-4967-b62b-cb75191bf030
+		summarizeBy: none
+		sourceColumn: entertainment_event_id
+
+	column currency
+		dataType: string
+		lineageTag: 8ec5a575-6838-4f77-a016-f959621ae5e4
+		summarizeBy: none
+		sourceColumn: currency
+
+	column confirmed_bookings
+		dataType: int64
+		isHidden
+		lineageTag: fc2b8a0f-e65e-4226-b9c5-f420acf3512e
+		summarizeBy: none
+		sourceColumn: confirmed_bookings
+
+	column refunded_bookings
+		dataType: int64
+		isHidden
+		lineageTag: c8ce3db2-b6fe-4854-9881-517e9b62c303
+		summarizeBy: none
+		sourceColumn: refunded_bookings
+
+	column confirmed_tickets
+		dataType: int64
+		isHidden
+		lineageTag: ce766043-d0d4-4665-a9af-7fea9216f808
+		summarizeBy: none
+		sourceColumn: confirmed_tickets
+
+	column refunded_tickets
+		dataType: int64
+		isHidden
+		lineageTag: f4a8f814-cf33-4a36-ae72-1f345d17ce10
+		summarizeBy: none
+		sourceColumn: refunded_tickets
+
+	column net_booking_value_proxy
+		dataType: double
+		isHidden
+		lineageTag: 3f13c7b8-062e-45df-be30-af27953cf021
+		summarizeBy: sum
+		sourceColumn: net_booking_value_proxy
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column attendance_records
+		dataType: int64
+		isHidden
+		lineageTag: d1fed1ce-ba1a-48b3-938b-68151ed2c3e1
+		summarizeBy: none
+		sourceColumn: attendance_records
+
+	column checked_in
+		dataType: int64
+		isHidden
+		lineageTag: ce374a80-c2b8-4754-a235-01231c8acbaf
+		summarizeBy: none
+		sourceColumn: checked_in
+
+	column no_show
+		dataType: int64
+		isHidden
+		lineageTag: 3aabea84-a729-42b4-a197-48c029959b51
+		summarizeBy: none
+		sourceColumn: no_show
+
+	column rejected
+		dataType: int64
+		isHidden
+		lineageTag: b59473e9-9f2c-44f2-93e9-5ee16dda5893
+		summarizeBy: none
+		sourceColumn: rejected
+
+	column attendance_rate_proxy
+		dataType: double
+		isHidden
+		lineageTag: 8d939db1-a356-498e-8d77-826fabeb8b06
+		summarizeBy: none
+		sourceColumn: attendance_rate_proxy
+
+	column no_show_rate_proxy
+		dataType: double
+		isHidden
+		lineageTag: 63b21ceb-f22b-4b09-8797-320f01b71c70
+		summarizeBy: none
+		sourceColumn: no_show_rate_proxy
+
+	column first_booking_event_at
+		dataType: dateTime
+		isHidden
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 619fc41d-4f60-44ba-a4f1-eede94e4191c
+		summarizeBy: none
+		sourceColumn: first_booking_event_at
+
+	column last_booking_event_at
+		dataType: dateTime
+		isHidden
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 4e4541e3-9a8a-48a1-9c21-3b7668823e06
+		summarizeBy: none
+		sourceColumn: last_booking_event_at
+
+	column first_attendance_event_at
+		dataType: dateTime
+		isHidden
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 97f062d0-832b-4fd1-b980-750fcb3eed2e
+		summarizeBy: none
+		sourceColumn: first_attendance_event_at
+
+	column last_attendance_event_at
+		dataType: dateTime
+		isHidden
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 2ff91ca8-06f0-442d-a583-38b268b395b2
+		summarizeBy: none
+		sourceColumn: last_attendance_event_at
+
+	partition EventPerformance = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\event_performance.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"entertainment_event_id", "currency", "confirmed_bookings", "refunded_bookings", "confirmed_tickets", "refunded_tickets", "net_booking_value_proxy", "attendance_records", "checked_in", "no_show", "rejected", "attendance_rate_proxy", "no_show_rate_proxy", "first_booking_event_at", "last_booking_event_at", "first_attendance_event_at", "last_attendance_event_at"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"entertainment_event_id", type text}, {"currency", type text}, {"confirmed_bookings", Int64.Type}, {"refunded_bookings", Int64.Type}, {"confirmed_tickets", Int64.Type}, {"refunded_tickets", Int64.Type}, {"net_booking_value_proxy", type number}, {"attendance_records", Int64.Type}, {"checked_in", Int64.Type}, {"no_show", Int64.Type}, {"rejected", Int64.Type}, {"attendance_rate_proxy", type number}, {"no_show_rate_proxy", type number}, {"first_booking_event_at", type datetimezone}, {"last_booking_event_at", type datetimezone}, {"first_attendance_event_at", type datetimezone}, {"last_attendance_event_at", type datetimezone}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

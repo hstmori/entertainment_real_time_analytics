@@ -1,0 +1,18 @@
+.env
+.git/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+data/
+logs/
+checkpoints/
+docs/
+config/
+scripts/*
+!scripts/oci/
+!scripts/oci/**
+!scripts/*.py
+Đề bài.txt
+

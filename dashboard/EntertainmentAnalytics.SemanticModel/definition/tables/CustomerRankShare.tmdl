@@ -1,0 +1,92 @@
+/// Governed Gold export: customer_rank_share.csv. Definitions: docs/gold-metric-definitions.md.
+table CustomerRankShare
+	lineageTag: f9dccf03-c26f-4ade-824a-5e8d60831070
+
+	measure 'Rank Share' = VAR Metric=SELECTEDVALUE(CustomerRankShare[metric_type]) VAR Ranks=VALUES(CustomerRankShare[member_rank]) VAR Part=IF(Metric="Tỷ lệ chi tiêu",CALCULATE(SUM(Customer360[net_spend_12m]),KEEPFILTERS(TREATAS(Ranks,Customer360[member_rank]))),CALCULATE(COUNTROWS(Customer360),KEEPFILTERS(TREATAS(Ranks,Customer360[member_rank])))) VAR Total=IF(Metric="Tỷ lệ chi tiêu",SUM(Customer360[net_spend_12m]),COUNTROWS(Customer360)) RETURN DIVIDE(Part,Total)
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: 14f7d838-5787-4f68-8263-7ecc7fd14383
+
+	measure 'Rank Customer Count' = MAX(CustomerRankShare[customer_count])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 62658bce-1c3b-48db-8fbd-4a0ef8bcc034
+
+	measure 'Rank Spend' = DIVIDE(MAX(CustomerRankShare[net_spend_12m]),1000000)
+		formatString: #,0.0 "triệu"
+		displayFolder: Dashboard
+		lineageTag: f0f07b82-b63b-4d12-8b3e-105b47ef981d
+
+	column metric_type
+		dataType: string
+		lineageTag: c281a6d3-c718-4a0c-b8b7-bba504d2efe5
+		summarizeBy: none
+		sourceColumn: metric_type
+
+	column member_rank
+		dataType: string
+		lineageTag: a9861a61-c234-4582-a712-09cc08a20535
+		summarizeBy: none
+		sourceColumn: member_rank
+
+	column member_rank_order
+		dataType: int64
+		lineageTag: dce3a057-d468-4ce5-9366-4bf4b957306c
+		summarizeBy: none
+		sourceColumn: member_rank_order
+
+	column member_rank_color
+		dataType: string
+		lineageTag: 01dca976-8274-4896-87f3-1f4b989dc8db
+		summarizeBy: none
+		sourceColumn: member_rank_color
+
+	column metric_value
+		dataType: double
+		isHidden
+		lineageTag: f61287ef-9ff5-44c4-aa68-a06f23203c00
+		summarizeBy: sum
+		sourceColumn: metric_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column metric_share
+		dataType: double
+		isHidden
+		lineageTag: fab67c5d-eec3-42ea-ace6-9980da183af8
+		summarizeBy: none
+		sourceColumn: metric_share
+
+	column customer_count
+		dataType: int64
+		isHidden
+		lineageTag: 253ecfeb-7054-480b-ad39-646788690483
+		summarizeBy: none
+		sourceColumn: customer_count
+
+	column net_spend_12m
+		dataType: double
+		isHidden
+		lineageTag: 386fe6da-e87b-430c-9f1d-c8b3a552eb20
+		summarizeBy: sum
+		sourceColumn: net_spend_12m
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition CustomerRankShare = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\customer_rank_share.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"metric_type", "member_rank", "member_rank_order", "member_rank_color", "metric_value", "metric_share", "customer_count", "net_spend_12m"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"metric_type", type text}, {"member_rank", type text}, {"member_rank_order", Int64.Type}, {"member_rank_color", type text}, {"metric_value", type number}, {"metric_share", type number}, {"customer_count", Int64.Type}, {"net_spend_12m", type number}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

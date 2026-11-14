@@ -1,0 +1,72 @@
+/// Governed Gold export: event_sales_pace.csv. Definitions: docs/gold-metric-definitions.md.
+table EventSalesPace
+	lineageTag: 9052edd0-abea-43f5-bd1e-e0e3ab599d16
+
+	measure 'Vé tích lũy thực tế' = SUM(EventSalesPace[actual_cumulative_tickets])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 7ba1aa2b-9de0-4d66-a830-e823c2fa1fc2
+
+	measure 'Vé tích lũy kế hoạch' = SUM(EventSalesPace[plan_cumulative_tickets])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 8949f7e8-22fd-4445-adda-f2d240fb09f1
+
+	measure 'Vé forecast' = SUM(EventSalesPace[forecast_cumulative_tickets])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: cbacbabe-2d32-4c81-a830-d65e9361d9f9
+
+	column program_id
+		dataType: string
+		lineageTag: e4c5330b-3ef7-4891-a115-cb7eb2801d3d
+		summarizeBy: none
+		sourceColumn: program_id
+
+	column event_date_utc
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 36cc2e38-e0fd-4730-ae91-962fc6f2cc88
+		summarizeBy: none
+		sourceColumn: event_date_utc
+
+	column lead_day
+		dataType: int64
+		lineageTag: bc92cdcb-cd36-4feb-8875-0d0a709b83d2
+		summarizeBy: none
+		sourceColumn: lead_day
+
+	column actual_cumulative_tickets
+		dataType: int64
+		isHidden
+		lineageTag: 44a835c7-295f-438f-bf2e-98871cdb0c5b
+		summarizeBy: none
+		sourceColumn: actual_cumulative_tickets
+
+	column plan_cumulative_tickets
+		dataType: int64
+		isHidden
+		lineageTag: 890e7c04-fdd4-499e-ac40-222f0583a951
+		summarizeBy: none
+		sourceColumn: plan_cumulative_tickets
+
+	column forecast_cumulative_tickets
+		dataType: int64
+		isHidden
+		lineageTag: 49131c7d-a5fa-4637-add8-1fb806d974fa
+		summarizeBy: none
+		sourceColumn: forecast_cumulative_tickets
+
+	partition EventSalesPace = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\event_sales_pace.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"program_id", "event_date_utc", "lead_day", "actual_cumulative_tickets", "plan_cumulative_tickets", "forecast_cumulative_tickets"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"program_id", type text}, {"event_date_utc", type datetimezone}, {"lead_day", Int64.Type}, {"actual_cumulative_tickets", Int64.Type}, {"plan_cumulative_tickets", Int64.Type}, {"forecast_cumulative_tickets", Int64.Type}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

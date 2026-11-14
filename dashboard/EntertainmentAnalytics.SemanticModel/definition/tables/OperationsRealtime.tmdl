@@ -1,0 +1,133 @@
+/// Governed Gold export: operations_realtime.csv. Definitions: docs/gold-metric-definitions.md.
+table OperationsRealtime
+	lineageTag: 660e50e7-eb7f-4dea-81ce-cc86b8b85296
+
+	measure 'Current RPS' = VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN CALCULATE(SUM(OperationsRealtime[requests_per_second]),OperationsRealtime[event_time_utc]=T)
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: cd9affdf-5bd5-4da8-867a-c714504a851d
+
+	measure 'P95 Latency' = VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN CALCULATE(MAX(OperationsRealtime[p95_latency_ms]),OperationsRealtime[event_time_utc]=T)
+		formatString: #,0 ms
+		displayFolder: Dashboard
+		lineageTag: 05e93a64-6a6d-4812-930a-59b5a2cda380
+
+	measure 'Error Rate' = VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN CALCULATE(DIVIDE(SUMX(OperationsRealtime,OperationsRealtime[error_rate]*OperationsRealtime[requests_per_second]),SUM(OperationsRealtime[requests_per_second])),OperationsRealtime[event_time_utc]=T)
+		formatString: 0.00%
+		displayFolder: Dashboard
+		lineageTag: 91cb8c45-f15f-4a73-be48-cd1a99e5a23e
+
+	measure 'Queue Depth' = VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN CALCULATE(SUM(OperationsRealtime[queue_depth]),OperationsRealtime[event_time_utc]=T)
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 08b2c954-e80b-4660-b50a-db5d688331ec
+
+	measure 'Throughput / phút' = VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN CALCULATE(SUM(OperationsRealtime[throughput_per_minute]),OperationsRealtime[event_time_utc]=T)
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: da3423a3-2107-4431-b6d1-a9a3f6b1acd1
+
+	measure 'Data Lag' = VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN CALCULATE(MAX(OperationsRealtime[data_lag_seconds]),OperationsRealtime[event_time_utc]=T)
+		formatString: #,0.0 s
+		displayFolder: Dashboard
+		lineageTag: 557be02c-bd84-49f5-aef4-067818c1712b
+
+	measure 'Dịch vụ cảnh báo' = CALCULATE(DISTINCTCOUNT(OperationsRealtime[service_name]),OperationsRealtime[status]="Cảnh báo")
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: db4b4f77-7921-48fb-94b9-c4fca69cef85
+
+	measure 'Màu trạng thái dịch vụ' = SWITCH([Trạng thái hiện tại], "Ổn định", "#34D399", "Cảnh báo", "#F87171", BLANK())
+		displayFolder: Formatting
+		lineageTag: 6d2297e4-03eb-4923-b261-c191713d9e72
+
+	measure 'P95 Latency cao nhất' = MAX(OperationsRealtime[p95_latency_ms])
+		formatString: #,0 ms
+		displayFolder: Dashboard
+		lineageTag: 4dc92577-6ecd-4d77-887a-1d545097cd68
+
+	measure 'Trạng thái hiện tại' = VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN IF(CALCULATE(COUNTROWS(OperationsRealtime),OperationsRealtime[event_time_utc]=T,OperationsRealtime[status]="Cảnh báo")>0,"Cảnh báo","Ổn định")
+		displayFolder: Dashboard
+		lineageTag: f3f35e3e-2bb2-4aa5-b345-e8514646d00e
+
+	column event_time_utc
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 2309a943-7d7e-4086-bf43-582d4669c742
+		summarizeBy: none
+		sourceColumn: event_time_utc
+
+	column event_date_utc
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: ea970952-8e1c-4105-be61-dfc2899dac60
+		summarizeBy: none
+		sourceColumn: event_date_utc
+
+	column service_name
+		dataType: string
+		lineageTag: be3c48dc-b8b5-4d0a-8d6a-52e4d75ae356
+		summarizeBy: none
+		sourceColumn: service_name
+
+	column requests_per_second
+		dataType: int64
+		isHidden
+		lineageTag: d27d0dec-1810-47f5-9961-5dc590c54686
+		summarizeBy: none
+		sourceColumn: requests_per_second
+
+	column p95_latency_ms
+		dataType: double
+		isHidden
+		lineageTag: 37c86850-b612-4172-910f-d7c1b676580a
+		summarizeBy: none
+		sourceColumn: p95_latency_ms
+
+	column error_rate
+		dataType: double
+		isHidden
+		lineageTag: 18c3c905-8525-4acf-a644-bb318c3b38eb
+		summarizeBy: none
+		sourceColumn: error_rate
+
+	column queue_depth
+		dataType: int64
+		isHidden
+		lineageTag: 2d26abad-5863-4197-866f-ef902cd595dc
+		summarizeBy: none
+		sourceColumn: queue_depth
+
+	column throughput_per_minute
+		dataType: int64
+		isHidden
+		lineageTag: 88775983-934f-4e1b-a3cc-0717ed20ec59
+		summarizeBy: none
+		sourceColumn: throughput_per_minute
+
+	column data_lag_seconds
+		dataType: double
+		isHidden
+		lineageTag: 54a625ed-92b1-4eeb-99ce-1b0a202478c1
+		summarizeBy: none
+		sourceColumn: data_lag_seconds
+
+	column status
+		dataType: string
+		lineageTag: 878f34a9-b1c5-4025-8d1f-03a827e96c0b
+		summarizeBy: none
+		sourceColumn: status
+
+	partition OperationsRealtime = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\operations_realtime.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"event_time_utc", "event_date_utc", "service_name", "requests_per_second", "p95_latency_ms", "error_rate", "queue_depth", "throughput_per_minute", "data_lag_seconds", "status"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"event_time_utc", type datetimezone}, {"event_date_utc", type datetimezone}, {"service_name", type text}, {"requests_per_second", Int64.Type}, {"p95_latency_ms", type number}, {"error_rate", type number}, {"queue_depth", Int64.Type}, {"throughput_per_minute", Int64.Type}, {"data_lag_seconds", type number}, {"status", type text}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

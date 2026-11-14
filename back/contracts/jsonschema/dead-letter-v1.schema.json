@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/contracts/dead-letter-v1.schema.json",
+  "title": "Entertainment dead-letter event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "dead_letter_id",
+    "failed_at",
+    "source_topic",
+    "source_partition",
+    "source_offset",
+    "consumer_group",
+    "error_type",
+    "error_message",
+    "raw_payload"
+  ],
+  "properties": {
+    "dead_letter_id": {"type": "string", "format": "uuid"},
+    "failed_at": {"type": "string", "format": "date-time"},
+    "source_topic": {"type": "string", "minLength": 1},
+    "source_partition": {"type": "integer", "minimum": 0},
+    "source_offset": {"type": "integer", "minimum": 0},
+    "consumer_group": {"type": "string", "minLength": 1},
+    "error_type": {"type": "string", "minLength": 1},
+    "error_message": {"type": "string", "minLength": 1, "maxLength": 4000},
+    "raw_payload": {"type": ["string", "null"]}
+  }
+}

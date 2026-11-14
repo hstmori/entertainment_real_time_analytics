@@ -1,0 +1,41 @@
+{
+  "arrived_over_sla": 0,
+  "checks": {
+    "expected_count": true,
+    "non_negative_processing_latency": true,
+    "non_negative_query_latency": true,
+    "p95_within_sla": true,
+    "unique_event_ids": true,
+    "unique_source_coordinates": true
+  },
+  "correlation_id": "f7aa0c81-e462-4d42-b530-ee14698b191e",
+  "duplicate_event_ids": 0,
+  "duplicate_source_coordinates": 0,
+  "event_type_counts": {
+    "booking": 10,
+    "event_attendance": 10,
+    "subscription": 10,
+    "user_activity": 10
+  },
+  "expected_count": 40,
+  "negative_processing_latency": 0,
+  "negative_query_latency": 0,
+  "observed_at": "2026-11-06T09:36:00.664Z",
+  "observed_count": 40,
+  "processing_latency_ms": {
+    "max": 3403,
+    "min": 2543,
+    "p50": 2710,
+    "p95": 3308,
+    "p99": 3403
+  },
+  "query_upper_bound_latency_ms": {
+    "max": 9468,
+    "min": 5568,
+    "p50": 7468,
+    "p95": 9268,
+    "p99": 9468
+  },
+  "sla_milliseconds": 60000,
+  "status": "passed"
+}

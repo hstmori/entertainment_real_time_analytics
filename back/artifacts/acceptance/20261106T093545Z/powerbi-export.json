@@ -1,0 +1,12 @@
+{
+  "row_counts": {
+    "booking_funnel_daily.csv": 29,
+    "content_engagement_hourly.csv": 28,
+    "customer_360.csv": 97,
+    "date.csv": 1,
+    "event_performance.csv": 23,
+    "refresh_audit.csv": 20,
+    "subscription_daily.csv": 3
+  },
+  "status": "exported"
+}

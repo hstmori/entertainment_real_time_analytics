@@ -1,0 +1,3 @@
+[console_scripts]
+entertainment-processor = entertainment_pipeline.stream_processor:cli
+entertainment-producer = entertainment_pipeline.producer:cli

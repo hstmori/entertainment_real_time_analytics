@@ -1,0 +1,12 @@
+{
+  "row_counts": {
+    "booking_funnel_daily": 29,
+    "content_engagement_hourly": 28,
+    "customer_360": 97,
+    "event_performance": 23,
+    "subscription_daily": 3
+  },
+  "run_id": "9ba433cb-15d6-44ee-9c9a-ae0f862b3e33",
+  "silver_snapshot_rows": 120,
+  "status": "completed"
+}

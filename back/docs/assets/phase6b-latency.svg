@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="510" viewBox="0 0 1000 510" role="img" aria-labelledby="title desc">
+<title id="title">Phase 6B P95 latency versus 60-second SLA</title>
+<desc id="desc">Four horizontal bars compare processing, Silver query, Gold refresh, and Power BI export P95 latency. Every value is below the 60-second target.</desc>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="40" y="42" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#111827">Phase 6B: P95 latency remains below the 60-second SLA</text>
+<text x="40" y="70" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#4B5563">Fresh 40-event batch · local simulated deployment · 2026-11-06</text>
+<line x1="260.0" y1="90" x2="260.0" y2="440" stroke="#E5E7EB" stroke-width="1"/>
+<text x="260.0" y="468" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#6B7280">0s</text>
+<line x1="363.1" y1="90" x2="363.1" y2="440" stroke="#E5E7EB" stroke-width="1"/>
+<text x="363.1" y="468" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#6B7280">10s</text>
+<line x1="466.2" y1="90" x2="466.2" y2="440" stroke="#E5E7EB" stroke-width="1"/>
+<text x="466.2" y="468" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#6B7280">20s</text>
+<line x1="569.2" y1="90" x2="569.2" y2="440" stroke="#E5E7EB" stroke-width="1"/>
+<text x="569.2" y="468" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#6B7280">30s</text>
+<line x1="672.3" y1="90" x2="672.3" y2="440" stroke="#E5E7EB" stroke-width="1"/>
+<text x="672.3" y="468" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#6B7280">40s</text>
+<line x1="775.4" y1="90" x2="775.4" y2="440" stroke="#E5E7EB" stroke-width="1"/>
+<text x="775.4" y="468" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#6B7280">50s</text>
+<line x1="878.5" y1="90" x2="878.5" y2="440" stroke="#E5E7EB" stroke-width="1"/>
+<text x="878.5" y="468" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#6B7280">60s</text>
+<line x1="878.5" y1="82" x2="878.5" y2="440" stroke="#DC2626" stroke-width="3" stroke-dasharray="8 6"/>
+<text x="872.5" y="72" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#B91C1C">SLA 60s</text>
+<text x="244" y="149.0" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#1F2937">Processor first-seen</text>
+<rect x="260" y="128.0" width="34.1" height="32" rx="5" fill="#2563EB"/>
+<text x="304.1" y="150.0" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#111827">3.308s</text>
+<text x="244" y="234.0" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#1F2937">Silver query upper bound</text>
+<rect x="260" y="213.0" width="95.5" height="32" rx="5" fill="#0F766E"/>
+<text x="365.5" y="235.0" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#111827">9.268s</text>
+<text x="244" y="319.0" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#1F2937">Gold refresh upper bound</text>
+<rect x="260" y="298.0" width="170.5" height="32" rx="5" fill="#7C3AED"/>
+<text x="440.5" y="320.0" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#111827">16.539s</text>
+<text x="244" y="404.0" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#1F2937">Power BI export upper bound</text>
+<rect x="260" y="383.0" width="212.3" height="32" rx="5" fill="#B45309"/>
+<text x="482.3" y="405.0" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#111827">20.593s</text>
+<text x="40" y="492" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#6B7280">Upper bounds are observed after each completed stage; event-to-visual was not measured because Power BI Desktop refresh remained manual.</text>
+</svg>

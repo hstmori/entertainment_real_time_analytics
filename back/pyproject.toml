@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "entertainment-real-time-pipeline"
+version = "0.1.0"
+description = "Synthetic event generator and Kafka producer for the Entertainment Lakehouse PoC"
+readme = "TECHNICAL_README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "confluent-kafka==2.16.1",
+    "jsonschema[format-nongpl]==4.26.0",
+    "trino==0.340.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.2.0",
+]
+
+[project.scripts]
+entertainment-producer = "entertainment_pipeline.producer:cli"
+entertainment-processor = "entertainment_pipeline.stream_processor:cli"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-ra -p no:cacheprovider"
+pythonpath = ["src"]
+testpaths = ["tests"]
+

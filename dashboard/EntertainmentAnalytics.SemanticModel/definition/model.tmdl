@@ -1,0 +1,33 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["Date","ContentEngagement","BookingFunnel","EventPerformance","SubscriptionDaily","Customer360","CustomerActivity","CustomerAffinity","CustomerRankShare","RefreshAudit","ExecutiveDaily","StreamingRealtime","ProgramEvent","EventSalesPace","EventSalesDetail","OperationsRealtime","DataRoot"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_ProTooling = ["MCP-PBIModeling", "DevMode"]
+
+annotation PBIDesktopVersion = 2.142.1277.0 (25.04)+014fde450f93691fc9537f0758d73d1c5df153ef
+
+ref table Date
+ref table ContentEngagement
+ref table BookingFunnel
+ref table EventPerformance
+ref table SubscriptionDaily
+ref table Customer360
+ref table CustomerActivity
+ref table CustomerAffinity
+ref table CustomerRankShare
+ref table RefreshAudit
+ref table ExecutiveDaily
+ref table StreamingRealtime
+ref table ProgramEvent
+ref table EventSalesPace
+ref table EventSalesDetail
+ref table OperationsRealtime
+

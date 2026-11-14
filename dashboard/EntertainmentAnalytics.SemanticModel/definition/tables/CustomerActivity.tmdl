@@ -1,0 +1,163 @@
+/// Governed Gold export: customer_activity.csv. Definitions: docs/gold-metric-definitions.md.
+table CustomerActivity
+	lineageTag: d7a1b299-f2f5-48ea-8885-45a8d75e7864
+
+	measure 'Customer Activities' = SUM(CustomerActivity[event_count])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: b91a1b5a-d86f-43b7-8dfd-38e12d90923f
+
+	measure 'Activity Amount' = DIVIDE(SUM(CustomerActivity[amount]),1000000)
+		formatString: #,0.0 "triệu"
+		displayFolder: Dashboard
+		lineageTag: d3c631f9-346b-416f-85a0-10a92b04011e
+
+	measure 'Màu kết quả hoạt động' = SWITCH(SELECTEDVALUE(CustomerActivity[activity_result]), "Thành công", "#34D399", "Đang xử lý", "#FBBF24", "Thất bại", "#F87171", "Thông tin", "#9FB3C8", BLANK())
+		displayFolder: Formatting
+		lineageTag: 1bc70138-ccf3-493b-8481-0db1e83f345b
+
+	column event_id
+		dataType: string
+		isHidden
+		lineageTag: 553cbecd-6d4a-4f3b-8357-35ae536087f9
+		summarizeBy: none
+		sourceColumn: event_id
+
+	column customer_id
+		dataType: string
+		lineageTag: 6bf77efd-b4e9-4a1a-b212-6ccc9d93a8c6
+		summarizeBy: none
+		sourceColumn: customer_id
+
+	column occurred_at
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: e9df4414-e44b-4532-9f71-60ff06c76aac
+		summarizeBy: none
+		sourceColumn: occurred_at
+
+	column event_date_utc
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 7f4eddf1-99c2-42df-9d67-bb1c6c5f3418
+		summarizeBy: none
+		sourceColumn: event_date_utc
+
+	column event_type
+		dataType: string
+		isHidden
+		lineageTag: 5960d85f-8d0e-4792-be00-99a6d501612f
+		summarizeBy: none
+		sourceColumn: event_type
+
+	column domain
+		dataType: string
+		lineageTag: 2cfca1f0-7bae-4eac-bc05-18f29a66f79d
+		summarizeBy: none
+		sourceColumn: domain
+
+	column action
+		dataType: string
+		isHidden
+		lineageTag: 3ed336cb-b618-4170-9d7a-f7ddd4b35518
+		summarizeBy: none
+		sourceColumn: action
+
+	column activity_label
+		dataType: string
+		lineageTag: e317aa7b-66ee-4284-b3e7-639c34a09c7d
+		summarizeBy: none
+		sourceColumn: activity_label
+
+	column activity_detail
+		dataType: string
+		lineageTag: 9091416a-370e-4844-9034-8649e67ec30b
+		summarizeBy: none
+		sourceColumn: activity_detail
+
+	column activity_result
+		dataType: string
+		lineageTag: e55d08d5-8ac4-401f-b143-936761e86bd3
+		summarizeBy: none
+		sourceColumn: activity_result
+
+	column activity_color
+		dataType: string
+		lineageTag: faf7605f-f8a1-49d6-be86-0e2191173366
+		summarizeBy: none
+		sourceColumn: activity_color
+
+	column source
+		dataType: string
+		isHidden
+		lineageTag: c9389bf6-aad9-4866-b29f-8dfe0cad7dcd
+		summarizeBy: none
+		sourceColumn: source
+
+	column device_type
+		dataType: string
+		lineageTag: 3719531f-717a-48c6-b5dd-ea687cda4d44
+		summarizeBy: none
+		sourceColumn: device_type
+
+	column content_id
+		dataType: string
+		lineageTag: 7632bda7-ae47-4f3d-bf1e-d281e99dbd85
+		summarizeBy: none
+		sourceColumn: content_id
+
+	column destination_id
+		dataType: string
+		lineageTag: 4002b301-7d00-413e-8c64-7fc034d20b5b
+		summarizeBy: none
+		sourceColumn: destination_id
+
+	column plan_id
+		dataType: string
+		lineageTag: 99dd5c59-b549-4505-a0ea-d2db3c7571d9
+		summarizeBy: none
+		sourceColumn: plan_id
+
+	column quantity
+		dataType: int64
+		isHidden
+		lineageTag: 39a40643-1158-413a-966a-45671d279240
+		summarizeBy: none
+		sourceColumn: quantity
+
+	column amount
+		dataType: double
+		lineageTag: 5a9af7cf-e296-460d-a6cd-fd628a0bca61
+		summarizeBy: sum
+		sourceColumn: amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column currency
+		dataType: string
+		lineageTag: 85c0012c-9556-432e-9859-9ca1abea2cdd
+		summarizeBy: none
+		sourceColumn: currency
+
+	column event_count
+		dataType: int64
+		isHidden
+		lineageTag: d3e1d836-e1cb-4086-b6e2-2a35b0aae0f7
+		summarizeBy: none
+		sourceColumn: event_count
+
+	partition CustomerActivity = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\customer_activity.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"event_id", "customer_id", "occurred_at", "event_date_utc", "event_type", "domain", "action", "activity_label", "activity_detail", "activity_result", "activity_color", "source", "device_type", "content_id", "destination_id", "plan_id", "quantity", "amount", "currency", "event_count"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"event_id", type text}, {"customer_id", type text}, {"occurred_at", type datetimezone}, {"event_date_utc", type datetimezone}, {"event_type", type text}, {"domain", type text}, {"action", type text}, {"activity_label", type text}, {"activity_detail", type text}, {"activity_result", type text}, {"activity_color", type text}, {"source", type text}, {"device_type", type text}, {"content_id", type text}, {"destination_id", type text}, {"plan_id", type text}, {"quantity", Int64.Type}, {"amount", type number}, {"currency", type text}, {"event_count", Int64.Type}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

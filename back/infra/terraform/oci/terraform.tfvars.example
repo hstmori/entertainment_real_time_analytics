@@ -1,0 +1,44 @@
+# Identifiers only. Do not put API private keys or passwords in this file.
+region           = "ap-singapore-1"
+tenancy_ocid     = "ocid1.tenancy.oc1..replace_me"
+compartment_ocid = "ocid1.compartment.oc1..replace_me"
+
+# Safety gate: keep false for the first terraform init/validate/plan.
+deployment_enabled = false
+environment        = "dev"
+project_name       = "entertainment-lakehouse"
+
+# Set a tenancy-unique prefix if the default names are already used.
+bucket_name_prefix = "replace-me-entertainment-dev"
+
+create_network = true
+vcn_cidr       = "10.40.0.0/16"
+private_subnet_cidr = "10.40.10.0/24"
+
+# Paid services stay disabled until quota, regional availability, and budget are confirmed.
+enable_managed_kafka = false
+kafka_cluster_type   = "DEVELOPMENT"
+kafka_broker_count   = 1
+kafka_broker_ocpus   = 1
+kafka_broker_storage_gb = 50
+kafka_version           = "3.7.0"
+kafka_coordination_type = "ZOOKEEPER"
+
+enable_dataflow = false
+# Populate from the Managed Kafka bootstrap FQDN before enabling Data Flow.
+dataflow_dns_zones = []
+# Upload the PySpark entry point to the artifacts bucket, then set its oci:// URI.
+dataflow_application_file_uri = ""
+dataflow_spark_version        = "3.5.0"
+
+enable_autonomous_lakehouse = false
+autonomous_db_name           = "ENTLAKEDEV"
+autonomous_compute_count     = 2
+autonomous_storage_gb        = 1024
+# Supply only a Vault secret OCID. The secret value never belongs in tfvars.
+autonomous_admin_secret_id = null
+
+freeform_tags = {
+  Owner      = "data-platform"
+  CostCenter = "replace-me"
+}

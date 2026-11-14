@@ -1,0 +1,269 @@
+/// Governed Gold export: program_event.csv. Definitions: docs/gold-metric-definitions.md.
+table ProgramEvent
+	lineageTag: e50e2ecf-a1fd-46a3-955c-6909c0f55be2
+
+	measure 'Số chương trình' = DISTINCTCOUNT(ProgramEvent[program_id])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 24e26178-e783-4c8a-96cf-9586bb347087
+
+	measure 'Sức chứa' = SUM(ProgramEvent[capacity])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: d432fad2-862e-4726-a7af-6a12f8c48aed
+
+	measure 'Vé đã bán' = SUM(ProgramEvent[tickets_sold])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 4fbc325d-5a1e-4f04-aef6-ef249736e923
+
+	measure 'Sell-through Rate' = DIVIDE([Vé đã bán],[Sức chứa])
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: cffa92bd-c7b8-4d20-9359-e6b720fd0ce2
+
+	measure 'Ticket GMV' = DIVIDE(SUM(ProgramEvent[ticket_gmv]),1000000000)
+		formatString: #,0.0 "tỷ"
+		displayFolder: Dashboard
+		lineageTag: c532309b-bf8a-455a-879d-e9096b26bb32
+
+	measure 'Doanh thu sự kiện' = DIVIDE(SUM(ProgramEvent[ticket_gmv])+SUM(ProgramEvent[service_fee])+SUM(ProgramEvent[sponsor_revenue])-SUM(ProgramEvent[refund_value]),1000000000)
+		formatString: #,0.0 "tỷ"
+		displayFolder: Dashboard
+		lineageTag: 219e4786-2c33-4fde-8b46-a8369f4fa5dd
+
+	measure 'Event Contribution Margin' = DIVIDE(SUM(ProgramEvent[contribution_margin]),1000000000)
+		formatString: #,0.0 "tỷ"
+		displayFolder: Dashboard
+		lineageTag: fbaaa474-7463-4134-8e85-60308fa587da
+
+	measure 'Event Margin %' = DIVIDE([Event Contribution Margin],[Doanh thu sự kiện])
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: 52fd8c9c-5719-4154-9bff-431cef25b864
+
+	measure 'Khách tham gia' = SUM(ProgramEvent[attendees])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: b5a372a1-dc1d-48f9-89a6-3624de893983
+
+	measure 'No-show Rate' = DIVIDE(SUM(ProgramEvent[no_shows]),SUM(ProgramEvent[attendees])+SUM(ProgramEvent[no_shows]))
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: 96fca890-bd4a-4968-a1ab-bf9e822df618
+
+	measure 'Sales Pace Index' = AVERAGE(ProgramEvent[sales_pace_index])
+		formatString: 0.00
+		displayFolder: Dashboard
+		lineageTag: 29609436-177b-44a2-9c29-0d9ce0102bcc
+
+	measure 'Tiến độ hòa vốn' = DIVIDE(SUM(ProgramEvent[contribution_margin]),SUM(ProgramEvent[fixed_cost]))
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: b9541c8f-88d3-4ab7-9d3f-737f14dea174
+
+	measure 'Chương trình đạt kế hoạch' = CALCULATE([Số chương trình],ProgramEvent[program_status]="Đúng kế hoạch")
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 863a379d-2b97-4e78-b01c-682a011f92cf
+
+	measure 'Tỷ lệ đạt kế hoạch' = DIVIDE([Chương trình đạt kế hoạch],[Số chương trình])
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: b67a76fa-7ea5-4b76-a50e-1938c512fa81
+
+	measure 'Member Conversions' = SUM(ProgramEvent[member_conversions])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 6ab00a91-c2dd-4f82-aca2-4e5b4c434ab4
+
+	measure 'Màu trạng thái chương trình' = SWITCH(SELECTEDVALUE(ProgramEvent[program_status]), "Đúng kế hoạch", "#34D399", "Cần theo dõi", "#FBBF24", "Có rủi ro", "#FB923C", "Nghiêm trọng", "#F87171", BLANK())
+		displayFolder: Formatting
+		lineageTag: eee5a762-2615-4ec2-97ce-59c3049890a6
+
+	column program_id
+		dataType: string
+		lineageTag: 3d474cd0-e4c3-450a-9b2c-b60062590962
+		summarizeBy: none
+		sourceColumn: program_id
+
+	column program_name
+		dataType: string
+		lineageTag: 0b0352fb-1bc9-488a-98f7-50c064fcbd3d
+		summarizeBy: none
+		sourceColumn: program_name
+
+	column program_type
+		dataType: string
+		lineageTag: 577bf619-88c8-4e62-a70f-508d6ab6e140
+		summarizeBy: none
+		sourceColumn: program_type
+
+	column region
+		dataType: string
+		lineageTag: ab1b1253-882c-4a75-a842-1af510bb3a1a
+		summarizeBy: none
+		sourceColumn: region
+
+	column event_date_utc
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 27769030-bd33-418f-80e6-b6fefab83e7e
+		summarizeBy: none
+		sourceColumn: event_date_utc
+
+	column capacity
+		dataType: int64
+		isHidden
+		lineageTag: 543ed7a7-539a-4089-925d-a338eff6ee65
+		summarizeBy: none
+		sourceColumn: capacity
+
+	column tickets_sold
+		dataType: int64
+		isHidden
+		lineageTag: 30741ffa-b542-431b-a25f-fcf4c3fe6eeb
+		summarizeBy: none
+		sourceColumn: tickets_sold
+
+	column ticket_gmv
+		dataType: double
+		isHidden
+		lineageTag: 3e52b80b-f2af-4908-a2ed-bb27c73d1de4
+		summarizeBy: sum
+		sourceColumn: ticket_gmv
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column service_fee
+		dataType: double
+		isHidden
+		lineageTag: 5715de93-9541-4889-afb1-4be2e077a75f
+		summarizeBy: sum
+		sourceColumn: service_fee
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column sponsor_revenue
+		dataType: double
+		isHidden
+		lineageTag: b662f185-4210-419c-bea2-8776b5b43650
+		summarizeBy: sum
+		sourceColumn: sponsor_revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column refund_value
+		dataType: double
+		isHidden
+		lineageTag: 241b0238-9dd6-43c7-9bf1-b85a04fd9386
+		summarizeBy: sum
+		sourceColumn: refund_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column variable_cost
+		dataType: double
+		isHidden
+		lineageTag: 1c003e59-fe12-4c81-b8ae-bd8ce6e1cb50
+		summarizeBy: sum
+		sourceColumn: variable_cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column fixed_cost
+		dataType: double
+		isHidden
+		lineageTag: 50c8a7a6-91cc-4256-8675-572659c4d33d
+		summarizeBy: sum
+		sourceColumn: fixed_cost
+
+	column contribution_margin
+		dataType: double
+		isHidden
+		lineageTag: 0ba0aeac-71e4-497c-a718-a452a14b8fa1
+		summarizeBy: sum
+		sourceColumn: contribution_margin
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column attendees
+		dataType: int64
+		isHidden
+		lineageTag: a03337e7-b4fe-4556-8b97-07ee6a52a1e6
+		summarizeBy: none
+		sourceColumn: attendees
+
+	column no_shows
+		dataType: int64
+		isHidden
+		lineageTag: c27a2066-8ea8-478f-8ee0-76b495e2a196
+		summarizeBy: none
+		sourceColumn: no_shows
+
+	column new_customers
+		dataType: int64
+		isHidden
+		lineageTag: 06e4227a-cf8e-4661-8a1a-9b74e41cb14d
+		summarizeBy: none
+		sourceColumn: new_customers
+
+	column member_conversions
+		dataType: int64
+		isHidden
+		lineageTag: 41b318a4-af24-41dc-9f5c-02a977775285
+		summarizeBy: none
+		sourceColumn: member_conversions
+
+	column sales_pace_index
+		dataType: double
+		isHidden
+		lineageTag: 9f645181-0a3e-4f1c-94c5-db4d01585dd2
+		summarizeBy: none
+		sourceColumn: sales_pace_index
+
+	column break_even_progress
+		dataType: double
+		isHidden
+		lineageTag: adad0360-1674-4879-bea4-f9d3093841ba
+		summarizeBy: none
+		sourceColumn: break_even_progress
+
+	column forecast_margin_rate
+		dataType: double
+		isHidden
+		lineageTag: e75a3639-e534-411c-a0cc-d27fc7e66f3c
+		summarizeBy: none
+		sourceColumn: forecast_margin_rate
+
+	column program_status
+		dataType: string
+		lineageTag: ab13ed72-958f-41c0-8628-45b7073fcb9d
+		summarizeBy: none
+		sourceColumn: program_status
+
+	partition ProgramEvent = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\program_event.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"program_id", "program_name", "program_type", "region", "event_date_utc", "capacity", "tickets_sold", "ticket_gmv", "service_fee", "sponsor_revenue", "refund_value", "variable_cost", "fixed_cost", "contribution_margin", "attendees", "no_shows", "new_customers", "member_conversions", "sales_pace_index", "break_even_progress", "forecast_margin_rate", "program_status"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"program_id", type text}, {"program_name", type text}, {"program_type", type text}, {"region", type text}, {"event_date_utc", type datetimezone}, {"capacity", Int64.Type}, {"tickets_sold", Int64.Type}, {"ticket_gmv", type number}, {"service_fee", type number}, {"sponsor_revenue", type number}, {"refund_value", type number}, {"variable_cost", type number}, {"fixed_cost", type number}, {"contribution_margin", type number}, {"attendees", Int64.Type}, {"no_shows", Int64.Type}, {"new_customers", Int64.Type}, {"member_conversions", Int64.Type}, {"sales_pace_index", type number}, {"break_even_progress", type number}, {"forecast_margin_rate", type number}, {"program_status", type text}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

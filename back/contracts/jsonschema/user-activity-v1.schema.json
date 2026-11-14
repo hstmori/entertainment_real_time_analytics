@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/contracts/user-activity-v1.schema.json",
+  "title": "Entertainment User Activity Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "correlation_id", "event_version", "occurred_at", "source", "customer_id", "session_id", "activity_type"],
+  "properties": {
+    "event_id": {"type": "string", "format": "uuid"},
+    "correlation_id": {"type": "string", "format": "uuid"},
+    "event_version": {"const": 1},
+    "occurred_at": {"type": "string", "format": "date-time"},
+    "source": {"type": "string", "minLength": 1, "maxLength": 100},
+    "customer_id": {"type": "string", "minLength": 1, "maxLength": 100},
+    "session_id": {"type": "string", "minLength": 1, "maxLength": 100},
+    "activity_type": {
+      "type": "string",
+      "enum": ["page_view", "search", "play", "pause", "resume", "stop", "complete"]
+    },
+    "content_id": {"type": ["string", "null"], "maxLength": 100},
+    "device_type": {"type": ["string", "null"], "enum": ["web", "mobile", "tablet", "tv", null]},
+    "position_seconds": {"type": ["number", "null"], "minimum": 0},
+    "search_term": {"type": ["string", "null"], "maxLength": 500}
+  }
+}
+

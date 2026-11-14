@@ -1,0 +1,111 @@
+/// Governed Gold export: content_engagement_hourly.csv. Definitions: docs/gold-metric-definitions.md.
+table ContentEngagement
+	lineageTag: ab2fd569-6a6e-4a55-8af3-363188d29428
+
+	measure 'Sự kiện hoạt động' = SUM(ContentEngagement[activity_events])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 422c7620-a6aa-475c-9589-fb8a845b76b9
+
+	measure 'Lượt phát' = SUM(ContentEngagement[play_events])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: b950d343-3964-41cf-8120-ecc693bff6aa
+
+	measure 'Lượt hoàn tất' = SUM(ContentEngagement[completion_events])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 8d99db47-95cd-4272-a1f0-f7274d341dc4
+
+	measure 'Tỷ lệ hoàn tất proxy' = DIVIDE([Lượt hoàn tất],[Lượt phát])
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: 6791f7fc-8365-4f2d-92b3-f0bbde69f2cd
+
+	measure 'Vị trí quan sát (giây)' = SUM(ContentEngagement[observed_position_seconds])
+		formatString: #,0.0
+		displayFolder: Dashboard
+		lineageTag: e1ca1756-de26-4ece-8db1-17da8261df26
+
+	column event_hour_utc
+		dataType: dateTime
+		isHidden
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 38a15f32-35e0-4f88-80d8-0750ead22b33
+		summarizeBy: none
+		sourceColumn: event_hour_utc
+
+	column event_date_utc
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 4f6ae2f5-543b-474d-9660-620514ca2c03
+		summarizeBy: none
+		sourceColumn: event_date_utc
+
+	column content_id
+		dataType: string
+		lineageTag: 8a94e133-4325-4db6-8545-aa728f7fa37e
+		summarizeBy: none
+		sourceColumn: content_id
+
+	column device_type
+		dataType: string
+		lineageTag: 974e71ee-e04c-4885-839b-e62ae3d26609
+		summarizeBy: none
+		sourceColumn: device_type
+
+	column activity_events
+		dataType: int64
+		isHidden
+		lineageTag: de0de496-d640-4957-9d19-d378512799dd
+		summarizeBy: none
+		sourceColumn: activity_events
+
+	column active_users
+		dataType: int64
+		isHidden
+		lineageTag: 6c705605-778e-42d6-a6d1-345ca29018f4
+		summarizeBy: none
+		sourceColumn: active_users
+
+	column play_events
+		dataType: int64
+		isHidden
+		lineageTag: b86663b2-3b24-44f8-80c2-750c5b1aec82
+		summarizeBy: none
+		sourceColumn: play_events
+
+	column completion_events
+		dataType: int64
+		isHidden
+		lineageTag: b08190c2-c558-4e1e-aa0e-c65fdbc8f650
+		summarizeBy: none
+		sourceColumn: completion_events
+
+	column completion_per_play_proxy
+		dataType: double
+		isHidden
+		lineageTag: 8056a738-d793-4866-bcd9-4a674099aad9
+		summarizeBy: none
+		sourceColumn: completion_per_play_proxy
+
+	column observed_position_seconds
+		dataType: double
+		isHidden
+		lineageTag: fb674e2e-641d-4d57-ad97-0905ec0ffceb
+		summarizeBy: none
+		sourceColumn: observed_position_seconds
+
+	partition ContentEngagement = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\content_engagement_hourly.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"event_hour_utc", "event_date_utc", "content_id", "device_type", "activity_events", "active_users", "play_events", "completion_events", "completion_per_play_proxy", "observed_position_seconds"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"event_hour_utc", type datetimezone}, {"event_date_utc", type datetimezone}, {"content_id", type text}, {"device_type", type text}, {"activity_events", Int64.Type}, {"active_users", Int64.Type}, {"play_events", Int64.Type}, {"completion_events", Int64.Type}, {"completion_per_play_proxy", type number}, {"observed_position_seconds", type number}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

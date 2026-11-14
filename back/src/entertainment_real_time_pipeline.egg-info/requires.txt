@@ -1,0 +1,6 @@
+confluent-kafka==2.16.1
+jsonschema[format-nongpl]==4.26.0
+trino==0.340.0
+
+[dev]
+pytest==9.2.0

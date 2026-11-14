@@ -1,0 +1,188 @@
+/// Governed Gold export: executive_daily.csv. Definitions: docs/gold-metric-definitions.md.
+table ExecutiveDaily
+	lineageTag: 32dbffee-a728-4581-9237-af0b2ff05e9a
+
+	measure 'Gross Value' = DIVIDE(SUM(ExecutiveDaily[gross_value]),1000000000)
+		formatString: #,0.0 "tỷ"
+		displayFolder: Dashboard
+		lineageTag: dbdf77ee-91d4-46f8-97bc-18a9966d732f
+
+	measure 'Doanh thu thuần' = DIVIDE(SUM(ExecutiveDaily[net_revenue]),1000000000)
+		formatString: #,0.0 "tỷ"
+		displayFolder: Dashboard
+		lineageTag: 9113a794-93e9-441d-b3b7-25a56a9783c9
+
+	measure 'Chi phí biến đổi' = DIVIDE(SUM(ExecutiveDaily[variable_cost]),1000000000)
+		formatString: #,0.0 "tỷ"
+		displayFolder: Dashboard
+		lineageTag: 319eab6b-6047-4494-be9d-01d474ce583a
+
+	measure 'Contribution Margin' = DIVIDE(SUM(ExecutiveDaily[contribution_margin]),1000000000)
+		formatString: #,0.0 "tỷ"
+		displayFolder: Dashboard
+		lineageTag: 654e5b34-d8c3-418d-b2c7-57f6b13e10c2
+
+	measure 'Contribution Margin %' = DIVIDE([Contribution Margin],[Doanh thu thuần])
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: bd122f00-1ebb-4806-b555-c5b999974aab
+
+	measure 'Hoàn tiền' = DIVIDE(SUM(ExecutiveDaily[refund_value]),1000000000)
+		formatString: #,0.0 "tỷ"
+		displayFolder: Dashboard
+		lineageTag: 9dcc31d5-c709-4cee-bcd5-9e4c3d245314
+
+	measure 'Giao dịch' = SUM(ExecutiveDaily[transactions])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: c398d3a7-3bd6-4438-bdaf-53409df41af8
+
+	measure 'Khách trả tiền theo dịch vụ' = SUM(ExecutiveDaily[paying_customers_line])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: b8f4cdf9-1716-46f6-8bad-cb36e7ec8115
+
+	measure 'Khách mới' = SUM(ExecutiveDaily[new_customers])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: bedb4b90-4296-4398-b786-72ccce5ef84a
+
+	measure 'Marketing Spend' = DIVIDE(SUM(ExecutiveDaily[marketing_spend]),1000000000)
+		formatString: #,0.0 "tỷ"
+		displayFolder: Dashboard
+		lineageTag: f95eb829-ccd5-47fb-9af6-9504a07d662c
+
+	measure 'Mục tiêu doanh thu' = DIVIDE(SUM(ExecutiveDaily[target_revenue]),1000000000)
+		formatString: #,0.0 "tỷ"
+		displayFolder: Dashboard
+		lineageTag: b45fd604-980a-4608-b8a6-cac71236ffbc
+
+	measure 'Tiến độ mục tiêu' = DIVIDE([Doanh thu thuần],[Mục tiêu doanh thu])
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: ba19a5b2-e845-44eb-b870-08c8f71dc5a4
+
+	column event_date_utc
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 09c9e8a9-4d3a-44ca-b758-78b00c3a9e0b
+		summarizeBy: none
+		sourceColumn: event_date_utc
+
+	column business_line
+		dataType: string
+		lineageTag: f5ddc723-a499-4ac9-9b85-2b80940efd4f
+		summarizeBy: none
+		sourceColumn: business_line
+
+	column gross_value
+		dataType: double
+		isHidden
+		lineageTag: 4fee359e-31a6-4a0d-b3dc-54809f3e78e0
+		summarizeBy: sum
+		sourceColumn: gross_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column net_revenue
+		dataType: double
+		isHidden
+		lineageTag: e415bbdc-b013-4757-ac2b-d4ebbfdeefa5
+		summarizeBy: sum
+		sourceColumn: net_revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column variable_cost
+		dataType: double
+		isHidden
+		lineageTag: 3a877ddf-c5ab-46d3-923d-c97b43beba15
+		summarizeBy: sum
+		sourceColumn: variable_cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column contribution_margin
+		dataType: double
+		isHidden
+		lineageTag: 7d64190d-110e-43a9-9e17-750b97e54f89
+		summarizeBy: sum
+		sourceColumn: contribution_margin
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column refund_value
+		dataType: double
+		isHidden
+		lineageTag: 11ebe0b8-b3d0-47ea-be51-50647b1d320d
+		summarizeBy: sum
+		sourceColumn: refund_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column transactions
+		dataType: int64
+		isHidden
+		lineageTag: 7e020868-9000-4471-8b6e-e10321922fae
+		summarizeBy: none
+		sourceColumn: transactions
+
+	column paying_customers_line
+		dataType: int64
+		isHidden
+		lineageTag: 959978a0-6006-41a4-a1ed-efad0f25961f
+		summarizeBy: none
+		sourceColumn: paying_customers_line
+
+	column new_customers
+		dataType: int64
+		isHidden
+		lineageTag: 536643b0-1613-466e-9d97-72e563d374b7
+		summarizeBy: none
+		sourceColumn: new_customers
+
+	column marketing_spend
+		dataType: double
+		isHidden
+		lineageTag: b3db03e2-c7f3-4208-ba51-e45f29739cec
+		summarizeBy: sum
+		sourceColumn: marketing_spend
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column target_revenue
+		dataType: double
+		isHidden
+		lineageTag: f7594bd7-24f9-455f-b061-e16335d2d448
+		summarizeBy: sum
+		sourceColumn: target_revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition ExecutiveDaily = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\executive_daily.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"event_date_utc", "business_line", "gross_value", "net_revenue", "variable_cost", "contribution_margin", "refund_value", "transactions", "paying_customers_line", "new_customers", "marketing_spend", "target_revenue"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"event_date_utc", type datetimezone}, {"business_line", type text}, {"gross_value", type number}, {"net_revenue", type number}, {"variable_cost", type number}, {"contribution_margin", type number}, {"refund_value", type number}, {"transactions", Int64.Type}, {"paying_customers_line", Int64.Type}, {"new_customers", Int64.Type}, {"marketing_spend", type number}, {"target_revenue", type number}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

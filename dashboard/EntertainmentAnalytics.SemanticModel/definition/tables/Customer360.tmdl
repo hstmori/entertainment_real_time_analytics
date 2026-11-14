@@ -1,0 +1,566 @@
+/// Governed Gold export: customer_360.csv. Definitions: docs/gold-metric-definitions.md.
+table Customer360
+	lineageTag: cf918a60-d388-449b-94e6-878cc808238e
+
+	measure 'Khách hàng' = COUNTROWS(Customer360)
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 193ae060-1962-40e6-bd6f-a309bdac9315
+
+	measure 'Net Spend 12M' = DIVIDE(SUM(Customer360[net_spend_12m]),1000000)
+		formatString: #,0.0 "triệu"
+		displayFolder: Dashboard
+		lineageTag: 48e74363-3073-4f76-95f0-32f9738e2e0b
+
+	measure 'Net Spend TB 12M' = DIVIDE(AVERAGE(Customer360[net_spend_12m]),1000000)
+		formatString: #,0.0 "triệu"
+		displayFolder: Dashboard
+		lineageTag: 8df15869-79a8-4e55-a97e-1ff3d9772e43
+
+	measure 'Customer Value 12M' = IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),DIVIDE(MAX(Customer360[net_spend_12m]),1000000))
+		formatString: #,0.0 "triệu"
+		displayFolder: Dashboard
+		lineageTag: afe952e5-3bcc-4577-88d1-4bed0f91c7c2
+
+	measure 'Lifetime Value Proxy' = IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),DIVIDE(MAX(Customer360[lifetime_value_proxy]),1000000))
+		formatString: #,0.0 "triệu"
+		displayFolder: Dashboard
+		lineageTag: 0037301a-49a8-408b-b69a-c1b35397e56d
+
+	measure 'Customer Contribution Margin' = IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),DIVIDE(MAX(Customer360[contribution_margin_proxy]),1000000))
+		formatString: #,0.0 "triệu"
+		displayFolder: Dashboard
+		lineageTag: 21971bf1-aaa4-49c2-867f-ef0852fd7573
+
+	measure 'Gold+ Customers' = COALESCE(COUNTROWS(FILTER(Customer360,Customer360[gold_plus_flag]=TRUE())),0)
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 2a04e528-1e84-4ec5-806c-0315ef5ade9a
+
+	measure 'Gold+ Customer Share' = DIVIDE([Gold+ Customers],[Khách hàng])
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: 83bd15bb-d1fc-40ec-9039-5069aecf83d8
+
+	measure 'Gold+ Spend' = DIVIDE(CALCULATE(SUM(Customer360[net_spend_12m]),Customer360[gold_plus_flag]=TRUE()),1000000)
+		formatString: #,0.0 "triệu"
+		displayFolder: Dashboard
+		lineageTag: 0c430674-7136-4c7e-8b4c-cf6a82df7ef9
+
+	measure 'Gold+ Spend Share' = DIVIDE(CALCULATE(SUM(Customer360[net_spend_12m]),Customer360[gold_plus_flag]=TRUE()),SUM(Customer360[net_spend_12m]))
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: 4eba5845-f103-4ef9-aeb4-fb3fc4fa74b6
+
+	measure 'Khách đa dịch vụ' = COALESCE(COUNTROWS(FILTER(Customer360,Customer360[domain_count]>=3)),0)
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: f99cedcd-aeab-45bc-800e-1d5c578576bd
+
+	measure 'Tỷ lệ khách đa dịch vụ' = DIVIDE([Khách đa dịch vụ],[Khách hàng])
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: 838f96a4-5f7d-4543-9b8f-ea6d696f0426
+
+	measure 'High-spend giảm tương tác' = COALESCE(COUNTROWS(FILTER(Customer360,Customer360[high_spend_low_engagement_flag]=TRUE())),0)
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: d85c5a1f-2abd-471d-989e-f18241f25433
+
+	measure 'Engagement Score' = AVERAGE(Customer360[engagement_score])
+		formatString: 0.0
+		displayFolder: Dashboard
+		lineageTag: 8ec80816-70f1-46b0-8287-f68f295f65c3
+
+	measure 'Engagement Score Profile' = IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[engagement_score]))
+		formatString: 0.0
+		displayFolder: Dashboard
+		lineageTag: ac6a5a59-256b-4985-b1cd-76be9182a489
+
+	measure 'Total Activities Profile' = IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[total_events]))
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: ff6fe63e-1987-4278-b789-4a5b802206ac
+
+	measure 'Watch Hours Profile' = IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[watch_hours_90d]))
+		formatString: #,0.0
+		displayFolder: Dashboard
+		lineageTag: 718830d6-8338-494f-9c9c-63940b3e0859
+
+	measure 'Watch Hours TB' = AVERAGE(Customer360[watch_hours_90d])
+		formatString: #,0.0
+		displayFolder: Dashboard
+		lineageTag: 2a2bf9a2-caf2-4a61-8022-365e6152971d
+
+	measure 'Sessions Profile' = IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[sessions]))
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: f84502de-8ba9-4099-9222-ab7f5d169158
+
+	measure 'Confirmed Tickets Profile' = IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[confirmed_tickets]))
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: a94a34e5-9b96-408d-87d7-55775c269beb
+
+	measure 'Bookings TB' = AVERAGE(Customer360[confirmed_bookings])
+		formatString: 0.0
+		displayFolder: Dashboard
+		lineageTag: 8738dc99-65bc-44ae-8155-67a53c4e3c40
+
+	measure 'Attendance Profile' = IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[checked_in_events]))
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 0b12a99c-53db-4a3c-b3aa-aded092dc6e2
+
+	measure 'Attendance TB' = AVERAGE(Customer360[checked_in_events])
+		formatString: 0.0
+		displayFolder: Dashboard
+		lineageTag: d03d3224-c05e-43cc-8fd0-44382a3feb6e
+
+	measure 'Subscription Events Profile' = IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[subscription_events]))
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: af9ee911-8b17-4f9f-ae6e-e801ec608a3f
+
+	measure 'Subscription Activity TB' = AVERAGE(Customer360[subscription_events])
+		formatString: 0.0
+		displayFolder: Dashboard
+		lineageTag: 38d6f122-47f9-4c06-a786-244a4dfb98e2
+
+	measure 'Completion Rate Profile' = IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[completion_rate]))
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: 9dc4de54-6b15-48cd-b685-c6d2de3919e6
+
+	measure 'Recency TB (ngày)' = AVERAGE(Customer360[recency_days])
+		formatString: 0.0
+		displayFolder: Dashboard
+		lineageTag: 3d3a7f15-8fe7-4b10-b56b-37065bab8bb6
+
+	measure 'Recency Profile' = IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[recency_days]))
+		formatString: #,0 ngày
+		displayFolder: Dashboard
+		lineageTag: c33b64d1-1ffc-4b8d-b3f9-47a80c68a340
+
+	measure 'Active Subscription Customers' = COALESCE(COUNTROWS(FILTER(Customer360,Customer360[active_subscription]=TRUE())),0)
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 9904c738-34d5-45e2-ab09-50452517dabf
+
+	measure 'Member Rank Profile' = SELECTEDVALUE(Customer360[member_rank],"Chọn 1 khách hàng")
+		displayFolder: Dashboard
+		lineageTag: bcdf89fc-a04a-458f-a72a-293c33355aeb
+
+	measure 'Behavior Risk Profile' = SELECTEDVALUE(Customer360[behavior_risk],"Chọn 1 khách hàng")
+		displayFolder: Dashboard
+		lineageTag: dbc44296-67ea-4a04-aa6f-5ddbbb3c01ca
+
+	measure 'Màu rủi ro hành vi' = SELECTEDVALUE(Customer360[behavior_risk_color])
+		displayFolder: Formatting
+		lineageTag: a663cb1f-e8eb-47fd-a93c-a0d081cd5b66
+
+	measure 'Màu hạng thành viên' = SWITCH(SELECTEDVALUE(Customer360[member_rank]), "Diamond", "#20D9E8", "Platinum", "#D9E2EC", "Gold", "#F5C451", "Silver", "#94A3B8", "Basic", "#64748B", BLANK())
+		displayFolder: Formatting
+		lineageTag: f3b59d35-1417-4388-94b7-e687457a6d6b
+
+	column customer_id
+		dataType: string
+		lineageTag: 4059207e-68d3-4fbd-a1ad-ece698cbacae
+		summarizeBy: none
+		sourceColumn: customer_id
+
+	column unified_customer_id
+		dataType: string
+		lineageTag: 74fb4d9c-4019-4a2d-a158-98f469a398a5
+		summarizeBy: none
+		sourceColumn: unified_customer_id
+
+	column region
+		dataType: string
+		lineageTag: 239adfdc-0bec-4bad-9971-9eb6c8d083bb
+		summarizeBy: none
+		sourceColumn: region
+
+	column consent_status
+		dataType: string
+		lineageTag: c8e66365-4f7d-4d50-8c7f-fc0f9f88e48f
+		summarizeBy: none
+		sourceColumn: consent_status
+
+	column preferred_device
+		dataType: string
+		lineageTag: c094c858-825b-4c6e-b9b3-83a937c8b632
+		summarizeBy: none
+		sourceColumn: preferred_device
+
+	column first_seen_at
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: e5fad6ce-c135-4b48-ae60-ae1d652dd8f2
+		summarizeBy: none
+		sourceColumn: first_seen_at
+
+	column last_seen_at
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 1bd6572b-6ee7-4352-b5db-cb7eb66d31a8
+		summarizeBy: none
+		sourceColumn: last_seen_at
+
+	column observed_days
+		dataType: int64
+		isHidden
+		lineageTag: a88cfe67-f1b9-4af3-94c9-7d9481562259
+		summarizeBy: none
+		sourceColumn: observed_days
+
+	column recency_days
+		dataType: int64
+		lineageTag: 8562bfeb-00f3-445a-a411-411740d2a68a
+		summarizeBy: none
+		sourceColumn: recency_days
+
+	column total_events
+		dataType: int64
+		isHidden
+		lineageTag: 5445b478-933a-4667-9f55-9350f2f4691f
+		summarizeBy: none
+		sourceColumn: total_events
+
+	column activity_events
+		dataType: int64
+		isHidden
+		lineageTag: c7c09c9e-0a30-478e-ab26-1c3cb8a72c91
+		summarizeBy: none
+		sourceColumn: activity_events
+
+	column active_days
+		dataType: int64
+		isHidden
+		lineageTag: db7e8fa7-bb21-4758-a2ae-21bbf0dbc918
+		summarizeBy: none
+		sourceColumn: active_days
+
+	column sessions
+		dataType: int64
+		isHidden
+		lineageTag: 2040555d-4c7c-495f-81d1-5e9457d7a072
+		summarizeBy: none
+		sourceColumn: sessions
+
+	column watch_hours_90d
+		dataType: double
+		isHidden
+		lineageTag: 2e083ad8-f596-4247-a798-0b219d2365b1
+		summarizeBy: none
+		sourceColumn: watch_hours_90d
+
+	column play_events
+		dataType: int64
+		isHidden
+		lineageTag: b51182e2-2df8-4338-b80d-eab8524b7cea
+		summarizeBy: none
+		sourceColumn: play_events
+
+	column completion_events
+		dataType: int64
+		isHidden
+		lineageTag: d522a631-ac4b-402f-a5e1-7250c00060a1
+		summarizeBy: none
+		sourceColumn: completion_events
+
+	column completion_rate
+		dataType: double
+		isHidden
+		lineageTag: c7df3ce1-3bf6-4c9f-baaa-66c8971e2bbf
+		summarizeBy: none
+		sourceColumn: completion_rate
+
+	column search_events
+		dataType: int64
+		isHidden
+		lineageTag: f776a6d8-f3b5-4294-a10b-250b1a021513
+		summarizeBy: none
+		sourceColumn: search_events
+
+	column favorite_content_id
+		dataType: string
+		lineageTag: ca6ade78-9d75-41b8-a7a0-84b936e79490
+		summarizeBy: none
+		sourceColumn: favorite_content_id
+
+	column booking_state_events
+		dataType: int64
+		isHidden
+		lineageTag: 14d20db2-a9d7-4da0-93c3-79167109885e
+		summarizeBy: none
+		sourceColumn: booking_state_events
+
+	column confirmed_bookings
+		dataType: int64
+		isHidden
+		lineageTag: a1c80fed-971d-4f54-90bc-8876cd4b5ca5
+		summarizeBy: none
+		sourceColumn: confirmed_bookings
+
+	column refunded_bookings
+		dataType: int64
+		isHidden
+		lineageTag: de6ccff3-0097-4be7-b4a2-246c4284c868
+		summarizeBy: none
+		sourceColumn: refunded_bookings
+
+	column failed_bookings
+		dataType: int64
+		isHidden
+		lineageTag: e5e29510-2d06-437a-911d-9a8a0f584f07
+		summarizeBy: none
+		sourceColumn: failed_bookings
+
+	column confirmed_tickets
+		dataType: int64
+		isHidden
+		lineageTag: 1d170411-9770-443e-9a16-429b59f4d140
+		summarizeBy: none
+		sourceColumn: confirmed_tickets
+
+	column ticket_spend_12m
+		dataType: double
+		isHidden
+		lineageTag: 002241d8-02c2-4cbd-af84-183ca43eb0e7
+		summarizeBy: sum
+		sourceColumn: ticket_spend_12m
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column subscription_spend_12m
+		dataType: double
+		isHidden
+		lineageTag: f5298292-b236-431b-b123-b7224d09c8ad
+		summarizeBy: sum
+		sourceColumn: subscription_spend_12m
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column content_spend_12m
+		dataType: double
+		isHidden
+		lineageTag: 375355f3-2dce-4939-a50b-37fb5a891cdd
+		summarizeBy: sum
+		sourceColumn: content_spend_12m
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column refund_value_12m
+		dataType: double
+		isHidden
+		lineageTag: b72a6b20-de0f-45e0-a315-db1a18ccaf7c
+		summarizeBy: sum
+		sourceColumn: refund_value_12m
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column net_spend_12m
+		dataType: double
+		isHidden
+		lineageTag: a2512778-82b1-4c8d-9580-063566a2c92b
+		summarizeBy: sum
+		sourceColumn: net_spend_12m
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column lifetime_value_proxy
+		dataType: double
+		isHidden
+		lineageTag: c760f0a0-990d-40ed-b9a0-5860578ecc00
+		summarizeBy: sum
+		sourceColumn: lifetime_value_proxy
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column contribution_margin_proxy
+		dataType: double
+		isHidden
+		lineageTag: 19864c27-2294-4d04-a002-8a586451dc32
+		summarizeBy: sum
+		sourceColumn: contribution_margin_proxy
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column attendance_records
+		dataType: int64
+		isHidden
+		lineageTag: d8210cd3-b188-4dd1-ba0f-60c853dafadf
+		summarizeBy: none
+		sourceColumn: attendance_records
+
+	column checked_in_events
+		dataType: int64
+		isHidden
+		lineageTag: d48b3f6f-fa80-4e8d-b881-335accbe1373
+		summarizeBy: none
+		sourceColumn: checked_in_events
+
+	column no_show_events
+		dataType: int64
+		isHidden
+		lineageTag: e49bcc29-cfac-4764-a2a0-471deb4d3e24
+		summarizeBy: none
+		sourceColumn: no_show_events
+
+	column attendance_rate
+		dataType: double
+		isHidden
+		lineageTag: 6ce0b9bf-1ee5-4fd7-8888-d8721aa1700b
+		summarizeBy: none
+		sourceColumn: attendance_rate
+
+	column subscription_events
+		dataType: int64
+		isHidden
+		lineageTag: f38a6e92-18bf-4825-81a3-ac2a335631cd
+		summarizeBy: none
+		sourceColumn: subscription_events
+
+	column latest_subscription_status
+		dataType: string
+		lineageTag: fc824835-c20c-4587-8e6e-0a86aa251569
+		summarizeBy: none
+		sourceColumn: latest_subscription_status
+
+	column latest_plan_id
+		dataType: string
+		lineageTag: eb47c617-d3f9-4f87-9783-8b561ca24ccf
+		summarizeBy: none
+		sourceColumn: latest_plan_id
+
+	column active_subscription
+		dataType: boolean
+		lineageTag: bddd58da-b8cb-48d5-ac8a-969378444e72
+		summarizeBy: none
+		sourceColumn: active_subscription
+
+	column subscription_tenure_months
+		dataType: int64
+		isHidden
+		lineageTag: 4146c942-a9ee-4942-beda-8626707ff13e
+		summarizeBy: none
+		sourceColumn: subscription_tenure_months
+
+	column domain_count
+		dataType: int64
+		lineageTag: cc3dfe72-f3f4-4a57-9b95-9af89f5a261e
+		summarizeBy: none
+		sourceColumn: domain_count
+
+	column service_mix
+		dataType: string
+		lineageTag: b6362f13-18ad-42df-aabe-ef82551d22d6
+		summarizeBy: none
+		sourceColumn: service_mix
+
+	column engagement_score
+		dataType: double
+		isHidden
+		lineageTag: 26225f6f-ca8d-4508-b325-9597dd911b86
+		summarizeBy: none
+		sourceColumn: engagement_score
+
+	column behavior_segment
+		dataType: string
+		lineageTag: 585aff43-d7db-4f3d-b811-50f5c839383d
+		summarizeBy: none
+		sourceColumn: behavior_segment
+
+	column engagement_trend_pct
+		dataType: double
+		isHidden
+		lineageTag: 17388f8e-24a8-4aee-bc3e-022b5b0d019f
+		summarizeBy: none
+		sourceColumn: engagement_trend_pct
+
+	column behavior_risk
+		dataType: string
+		lineageTag: 13bd3f66-17ad-4bab-9c1e-26408dfe40cf
+		summarizeBy: none
+		sourceColumn: behavior_risk
+
+	column behavior_risk_color
+		dataType: string
+		isHidden
+		lineageTag: 408ed2c9-118d-4def-8677-6e0361b2610c
+		summarizeBy: none
+		sourceColumn: behavior_risk_color
+
+	column member_rank
+		dataType: string
+		lineageTag: 7d802ba7-18d2-4932-95ab-088472c7c4d9
+		summarizeBy: none
+		sourceColumn: member_rank
+
+	column member_rank_order
+		dataType: int64
+		lineageTag: ecbcedef-b54f-4d4a-9d91-d5dbcf7c0a72
+		summarizeBy: none
+		sourceColumn: member_rank_order
+
+	column member_rank_color
+		dataType: string
+		lineageTag: f188f9d0-bd51-4000-9edf-9e1876386350
+		summarizeBy: none
+		sourceColumn: member_rank_color
+
+	column gold_plus_flag
+		dataType: boolean
+		isHidden
+		lineageTag: b5b953da-b69d-4ead-93dd-84bf922aeb88
+		summarizeBy: none
+		sourceColumn: gold_plus_flag
+
+	column high_spend_low_engagement_flag
+		dataType: boolean
+		isHidden
+		lineageTag: b29fbee1-f11e-4106-ab42-52f245820d4b
+		summarizeBy: none
+		sourceColumn: high_spend_low_engagement_flag
+
+	column next_best_action
+		dataType: string
+		lineageTag: cb8a7623-6b38-469a-9e66-288cb1dde49d
+		summarizeBy: none
+		sourceColumn: next_best_action
+
+	column profile_note
+		dataType: string
+		isHidden
+		lineageTag: d67388d4-fcf6-451b-9242-f3be7ce1a6ef
+		summarizeBy: none
+		sourceColumn: profile_note
+
+	partition Customer360 = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\customer_360.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"customer_id", "unified_customer_id", "region", "consent_status", "preferred_device", "first_seen_at", "last_seen_at", "observed_days", "recency_days", "total_events", "activity_events", "active_days", "sessions", "watch_hours_90d", "play_events", "completion_events", "completion_rate", "search_events", "favorite_content_id", "booking_state_events", "confirmed_bookings", "refunded_bookings", "failed_bookings", "confirmed_tickets", "ticket_spend_12m", "subscription_spend_12m", "content_spend_12m", "refund_value_12m", "net_spend_12m", "lifetime_value_proxy", "contribution_margin_proxy", "attendance_records", "checked_in_events", "no_show_events", "attendance_rate", "subscription_events", "latest_subscription_status", "latest_plan_id", "active_subscription", "subscription_tenure_months", "domain_count", "service_mix", "engagement_score", "behavior_segment", "engagement_trend_pct", "behavior_risk", "behavior_risk_color", "member_rank", "member_rank_order", "member_rank_color", "gold_plus_flag", "high_spend_low_engagement_flag", "next_best_action", "profile_note"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"customer_id", type text}, {"unified_customer_id", type text}, {"region", type text}, {"consent_status", type text}, {"preferred_device", type text}, {"first_seen_at", type datetimezone}, {"last_seen_at", type datetimezone}, {"observed_days", Int64.Type}, {"recency_days", Int64.Type}, {"total_events", Int64.Type}, {"activity_events", Int64.Type}, {"active_days", Int64.Type}, {"sessions", Int64.Type}, {"watch_hours_90d", type number}, {"play_events", Int64.Type}, {"completion_events", Int64.Type}, {"completion_rate", type number}, {"search_events", Int64.Type}, {"favorite_content_id", type text}, {"booking_state_events", Int64.Type}, {"confirmed_bookings", Int64.Type}, {"refunded_bookings", Int64.Type}, {"failed_bookings", Int64.Type}, {"confirmed_tickets", Int64.Type}, {"ticket_spend_12m", type number}, {"subscription_spend_12m", type number}, {"content_spend_12m", type number}, {"refund_value_12m", type number}, {"net_spend_12m", type number}, {"lifetime_value_proxy", type number}, {"contribution_margin_proxy", type number}, {"attendance_records", Int64.Type}, {"checked_in_events", Int64.Type}, {"no_show_events", Int64.Type}, {"attendance_rate", type number}, {"subscription_events", Int64.Type}, {"latest_subscription_status", type text}, {"latest_plan_id", type text}, {"active_subscription", type logical}, {"subscription_tenure_months", Int64.Type}, {"domain_count", Int64.Type}, {"service_mix", type text}, {"engagement_score", type number}, {"behavior_segment", type text}, {"engagement_trend_pct", type number}, {"behavior_risk", type text}, {"behavior_risk_color", type text}, {"member_rank", type text}, {"member_rank_order", Int64.Type}, {"member_rank_color", type text}, {"gold_plus_flag", type logical}, {"high_spend_low_engagement_flag", type logical}, {"next_best_action", type text}, {"profile_note", type text}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

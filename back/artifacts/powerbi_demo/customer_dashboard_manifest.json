@@ -1,0 +1,45 @@
+{
+  "classification": "deterministic synthetic customer dashboard demo data",
+  "snapshot_at": "2026-11-05T22:00:00.000Z",
+  "seed": 20261107,
+  "spend_window_months": 12,
+  "behavior_window_days": 90,
+  "rank_rules": [
+    {
+      "rank": "Diamond",
+      "minimum_net_spend_12m": "10000000",
+      "order": 1,
+      "color": "#20D9E8"
+    },
+    {
+      "rank": "Platinum",
+      "minimum_net_spend_12m": "5000000",
+      "order": 2,
+      "color": "#D9E2EC"
+    },
+    {
+      "rank": "Gold",
+      "minimum_net_spend_12m": "2000000",
+      "order": 3,
+      "color": "#F5C451"
+    },
+    {
+      "rank": "Silver",
+      "minimum_net_spend_12m": "500000",
+      "order": 4,
+      "color": "#94A3B8"
+    },
+    {
+      "rank": "Basic",
+      "minimum_net_spend_12m": "0",
+      "order": 5,
+      "color": "#4B5563"
+    }
+  ],
+  "row_counts": {
+    "customer_360.csv": 200,
+    "customer_activity.csv": 1130,
+    "customer_affinity.csv": 800,
+    "customer_rank_share.csv": 10
+  }
+}

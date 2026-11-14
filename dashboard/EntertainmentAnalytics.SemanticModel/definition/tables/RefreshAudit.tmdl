@@ -1,0 +1,71 @@
+/// Governed Gold export: refresh_audit.csv. Definitions: docs/gold-metric-definitions.md.
+table RefreshAudit
+	lineageTag: af2d191b-7cd9-4eaa-9c40-8ca60bf7a2e0
+
+	measure 'Số lần refresh' = DISTINCTCOUNT(RefreshAudit[run_id])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 2d2f2f50-6f7b-42b7-bebf-a4a68a0a3bb7
+
+	measure 'Refresh gần nhất' = MAX(RefreshAudit[refreshed_at])
+		formatString: dd/MM/yyyy HH:mm
+		displayFolder: Dashboard
+		lineageTag: 18825482-97e3-4f30-93fc-d3fb4afac9be
+
+	measure 'Models đã refresh' = COUNTROWS(RefreshAudit)
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: b019be0b-6524-44d8-8c1e-6de8e87371c6
+
+	column run_id
+		dataType: string
+		lineageTag: 8af08300-4ab6-4f43-897a-4d1e698aa1c9
+		summarizeBy: none
+		sourceColumn: run_id
+
+	column model_name
+		dataType: string
+		lineageTag: 7e7abc9d-ae99-48bd-bf8f-f14eb1316db9
+		summarizeBy: none
+		sourceColumn: model_name
+
+	column refreshed_at
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 58054392-5fdb-47d4-9aac-1be71a70fca7
+		summarizeBy: none
+		sourceColumn: refreshed_at
+
+	column row_count
+		dataType: int64
+		isHidden
+		lineageTag: 22444337-4f1a-4ee4-b435-6139f8b5aa00
+		summarizeBy: none
+		sourceColumn: row_count
+
+	column silver_snapshot_rows
+		dataType: int64
+		isHidden
+		lineageTag: 3dd54301-cc89-4d83-b015-da7289e62721
+		summarizeBy: none
+		sourceColumn: silver_snapshot_rows
+
+	column status
+		dataType: string
+		lineageTag: 450a9b19-da42-4bca-94bf-2ecf350775e9
+		summarizeBy: none
+		sourceColumn: status
+
+	partition RefreshAudit = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\refresh_audit.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"run_id", "model_name", "refreshed_at", "row_count", "silver_snapshot_rows", "status"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"run_id", type text}, {"model_name", type text}, {"refreshed_at", type datetimezone}, {"row_count", Int64.Type}, {"silver_snapshot_rows", Int64.Type}, {"status", type text}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

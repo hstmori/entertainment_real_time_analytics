@@ -1,0 +1,48 @@
+relationship Date_ContentEngagement
+	fromColumn: ContentEngagement.event_date_utc
+	toColumn: Date.date
+
+relationship Date_BookingFunnel
+	fromColumn: BookingFunnel.event_date_utc
+	toColumn: Date.date
+
+relationship Date_SubscriptionDaily
+	fromColumn: SubscriptionDaily.event_date_utc
+	toColumn: Date.date
+
+relationship Date_ExecutiveDaily
+	fromColumn: ExecutiveDaily.event_date_utc
+	toColumn: Date.date
+
+relationship Date_StreamingRealtime
+	fromColumn: StreamingRealtime.event_date_utc
+	toColumn: Date.date
+
+relationship Date_ProgramEvent
+	fromColumn: ProgramEvent.event_date_utc
+	toColumn: Date.date
+
+relationship Date_OperationsRealtime
+	fromColumn: OperationsRealtime.event_date_utc
+	toColumn: Date.date
+
+relationship Date_CustomerActivity
+	fromColumn: CustomerActivity.event_date_utc
+	toColumn: Date.date
+
+relationship Customer360_CustomerActivity
+	fromColumn: CustomerActivity.customer_id
+	toColumn: Customer360.customer_id
+
+relationship Customer360_CustomerAffinity
+	fromColumn: CustomerAffinity.customer_id
+	toColumn: Customer360.customer_id
+
+relationship ProgramEvent_EventSalesPace
+	fromColumn: EventSalesPace.program_id
+	toColumn: ProgramEvent.program_id
+
+relationship ProgramEvent_EventSalesDetail
+	fromColumn: EventSalesDetail.program_id
+	toColumn: ProgramEvent.program_id
+

@@ -1,0 +1,247 @@
+name: ${COMPOSE_PROJECT_NAME:-entertainment-lakehouse}
+
+services:
+  kafka:
+    image: apache/kafka:4.1.0
+    hostname: kafka
+    ports:
+      - "${KAFKA_HOST_PORT:-29092}:29092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,PLAINTEXT_HOST://:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:${KAFKA_HOST_PORT:-29092}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+
+  kafka-init:
+    image: apache/kafka:4.1.0
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - >-
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic entertainment.user-activity.v1 --partitions 3 --replication-factor 1 &&
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic entertainment.booking.v1 --partitions 3 --replication-factor 1 &&
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic entertainment.subscription.v1 --partitions 3 --replication-factor 1 &&
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic entertainment.event-attendance.v1 --partitions 3 --replication-factor 1 &&
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic entertainment.dead-letter.v1 --partitions 3 --replication-factor 1
+    restart: "no"
+
+  object-store:
+    image: rustfs/rustfs:1.0.0
+    hostname: object-store
+    ports:
+      - "${OBJECT_STORE_API_PORT:-9000}:9000"
+      - "${OBJECT_STORE_CONSOLE_PORT:-9001}:9001"
+    environment:
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_ACCESS_KEY: ${OBJECT_STORE_ACCESS_KEY:-lakehouse_admin}
+      RUSTFS_SECRET_KEY: ${OBJECT_STORE_SECRET_KEY:-change-this-local-password}
+      RUSTFS_OBS_LOGGER_LEVEL: info
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:9000/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    volumes:
+      - object-store-data:/data
+
+  object-store-init:
+    image: rustfs/rustfs:1.0.0
+    depends_on:
+      object-store:
+        condition: service_healthy
+    environment:
+      OBJECT_STORE_ACCESS_KEY: ${OBJECT_STORE_ACCESS_KEY:-lakehouse_admin}
+      OBJECT_STORE_SECRET_KEY: ${OBJECT_STORE_SECRET_KEY:-change-this-local-password}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - >-
+        (curl -sf -o /dev/null --aws-sigv4 aws:amz:$${AWS_REGION}:s3 --user "$${OBJECT_STORE_ACCESS_KEY}:$${OBJECT_STORE_SECRET_KEY}" --head http://object-store:9000/warehouse ||
+        curl -sSf --aws-sigv4 aws:amz:$${AWS_REGION}:s3 --user "$${OBJECT_STORE_ACCESS_KEY}:$${OBJECT_STORE_SECRET_KEY}" -X PUT http://object-store:9000/warehouse) &&
+        (curl -sf -o /dev/null --aws-sigv4 aws:amz:$${AWS_REGION}:s3 --user "$${OBJECT_STORE_ACCESS_KEY}:$${OBJECT_STORE_SECRET_KEY}" --head http://object-store:9000/raw ||
+        curl -sSf --aws-sigv4 aws:amz:$${AWS_REGION}:s3 --user "$${OBJECT_STORE_ACCESS_KEY}:$${OBJECT_STORE_SECRET_KEY}" -X PUT http://object-store:9000/raw) &&
+        (curl -sf -o /dev/null --aws-sigv4 aws:amz:$${AWS_REGION}:s3 --user "$${OBJECT_STORE_ACCESS_KEY}:$${OBJECT_STORE_SECRET_KEY}" --head http://object-store:9000/checkpoints ||
+        curl -sSf --aws-sigv4 aws:amz:$${AWS_REGION}:s3 --user "$${OBJECT_STORE_ACCESS_KEY}:$${OBJECT_STORE_SECRET_KEY}" -X PUT http://object-store:9000/checkpoints)
+    restart: "no"
+
+  iceberg-rest:
+    image: apache/iceberg-rest-fixture:latest
+    hostname: iceberg-rest
+    depends_on:
+      object-store-init:
+        condition: service_completed_successfully
+    ports:
+      - "${ICEBERG_REST_PORT:-8181}:8181"
+    environment:
+      AWS_ACCESS_KEY_ID: ${OBJECT_STORE_ACCESS_KEY:-lakehouse_admin}
+      AWS_SECRET_ACCESS_KEY: ${OBJECT_STORE_SECRET_KEY:-change-this-local-password}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      CATALOG_WAREHOUSE: s3://warehouse/
+      CATALOG_IO__IMPL: org.apache.iceberg.aws.s3.S3FileIO
+      CATALOG_S3_ENDPOINT: http://object-store:9000
+      CATALOG_S3_PATH__STYLE__ACCESS: "true"
+
+  trino:
+    image: trinodb/trino:484
+    hostname: trino
+    depends_on:
+      - iceberg-rest
+    ports:
+      - "${TRINO_PORT:-8080}:8080"
+    environment:
+      OBJECT_STORE_ACCESS_KEY: ${OBJECT_STORE_ACCESS_KEY:-lakehouse_admin}
+      OBJECT_STORE_SECRET_KEY: ${OBJECT_STORE_SECRET_KEY:-change-this-local-password}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+    volumes:
+      - ./config/trino/catalog/iceberg.properties:/etc/trino/catalog/iceberg.properties:ro
+
+  event-producer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_CLIENT_ID: entertainment-event-producer
+      CONTRACTS_DIR: /app/contracts/jsonschema
+    command: ["--count", "100", "--rate", "20", "--seed", "42"]
+    profiles: ["producer"]
+
+  event-producer-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: test
+    environment:
+      CONTRACTS_DIR: /app/contracts/jsonschema
+    profiles: ["test"]
+
+  stream-processor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: processor
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+      trino:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_CONSUMER_GROUP: entertainment-lakehouse-bronze-v1
+      KAFKA_PROCESSOR_CLIENT_ID: entertainment-stream-processor
+      CONTRACTS_DIR: /app/contracts/jsonschema
+      TRINO_HOST: trino
+      TRINO_PORT: 8080
+      TRINO_USER: entertainment-pipeline
+      TRINO_CATALOG: iceberg
+      BRONZE_SCHEMA: bronze
+      SILVER_SCHEMA: silver
+      PROCESSOR_MAX_RETRIES: 3
+      PROCESSOR_RETRY_BACKOFF_SECONDS: 1
+    command: ["--batch-size", "100", "--flush-interval", "10"]
+    profiles: ["processor"]
+
+  stream-processor-replay:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: processor
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+      trino:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_CONSUMER_GROUP: entertainment-lakehouse-replay-v1
+      KAFKA_PROCESSOR_CLIENT_ID: entertainment-stream-processor-replay
+      CONTRACTS_DIR: /app/contracts/jsonschema
+      TRINO_HOST: trino
+      TRINO_PORT: 8080
+      TRINO_USER: entertainment-pipeline
+      TRINO_CATALOG: iceberg
+      BRONZE_SCHEMA: bronze_replay
+      SILVER_SCHEMA: silver_replay
+      PROCESSOR_MAX_RETRIES: 3
+      PROCESSOR_RETRY_BACKOFF_SECONDS: 1
+    command: ["--batch-size", "100", "--flush-interval", "10"]
+    profiles: ["processor"]
+
+  gold-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: gold
+    depends_on:
+      trino:
+        condition: service_healthy
+    environment:
+      TRINO_HOST: trino
+      TRINO_PORT: 8080
+      TRINO_USER: entertainment-gold-builder
+      TRINO_CATALOG: iceberg
+      SILVER_SCHEMA: silver
+      GOLD_SCHEMA: gold
+      GOLD_SQL_DIR: /app/sql/gold
+    profiles: ["analytics"]
+
+  powerbi-exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: gold
+    depends_on:
+      trino:
+        condition: service_healthy
+    entrypoint: ["python", "-m", "entertainment_pipeline.powerbi_export"]
+    environment:
+      TRINO_HOST: trino
+      TRINO_PORT: 8080
+      TRINO_USER: entertainment-powerbi-exporter
+      TRINO_CATALOG: iceberg
+      GOLD_SCHEMA: gold
+    volumes:
+      - ./artifacts/powerbi:/exports
+    command: ["--output-dir", "/exports"]
+    profiles: ["analytics"]
+
+volumes:
+  kafka-data:
+  object-store-data:
+

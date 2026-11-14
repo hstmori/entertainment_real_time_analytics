@@ -1,0 +1,195 @@
+/// Governed Gold export: booking_funnel_daily.csv. Definitions: docs/gold-metric-definitions.md.
+table BookingFunnel
+	lineageTag: 3d91fe11-ae8a-443f-b58f-957cc6fc0df5
+
+	measure 'Sự kiện booking' = SUM(BookingFunnel[booking_state_events])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: df1270de-d214-4aad-a8ef-53d21742eb5f
+
+	measure 'Booking xác nhận' = SUM(BookingFunnel[confirmed_events])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: eac035cc-2d57-4f24-9770-d6a12d801354
+
+	measure 'Booking hoàn tiền' = SUM(BookingFunnel[refunded_events])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: a426b227-181c-4543-a2d8-1820f5a31e7a
+
+	measure 'Booking thất bại' = SUM(BookingFunnel[failed_events])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 8def5baa-6578-45c6-bd44-7af7cfad9618
+
+	measure 'Vé xác nhận' = SUM(BookingFunnel[confirmed_quantity])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 309b077f-6fe4-4b59-85a9-e4510f04bdea
+
+	measure 'Giá trị xác nhận' = SUM(BookingFunnel[confirmed_amount])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: e460753a-8240-40f5-bded-0711d9ec0e9a
+
+	measure 'Giá trị hoàn tiền' = SUM(BookingFunnel[refunded_amount])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: ef9d7ac7-907e-4cad-b839-d89446e4efad
+
+	measure 'Giá trị booking ròng proxy' = SUM(BookingFunnel[net_booking_value_proxy])
+		formatString: #,0;(#,0)
+		displayFolder: Dashboard
+		lineageTag: d683d899-369a-4dd1-8504-a534f63ffb45
+
+	measure 'Tỷ trọng xác nhận proxy' = DIVIDE([Booking xác nhận],[Sự kiện booking])
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: 112f3eeb-c7ee-4d86-9dae-76e0d002bfee
+
+	column event_date_utc
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 1c83f395-c4ca-49c2-bad8-c50d9d3dd6d5
+		summarizeBy: none
+		sourceColumn: event_date_utc
+
+	column destination_type
+		dataType: string
+		lineageTag: 5ba9f88b-31d2-4d57-bdd8-4764d9f842f0
+		summarizeBy: none
+		sourceColumn: destination_type
+
+	column destination_id
+		dataType: string
+		lineageTag: abd3043d-8ba8-425d-a047-92f9f2e72baf
+		summarizeBy: none
+		sourceColumn: destination_id
+
+	column booking_type
+		dataType: string
+		lineageTag: 6d220c73-6f08-4226-9aef-5af3384ba302
+		summarizeBy: none
+		sourceColumn: booking_type
+
+	column channel
+		dataType: string
+		lineageTag: 56547a41-9810-43f9-9073-9f88bad2e0ab
+		summarizeBy: none
+		sourceColumn: channel
+
+	column currency
+		dataType: string
+		lineageTag: 592bcd7a-1fd7-4f52-8f93-aaab9a2ad221
+		summarizeBy: none
+		sourceColumn: currency
+
+	column booking_state_events
+		dataType: int64
+		isHidden
+		lineageTag: 7d82245a-7643-4d37-bb11-eb1f07ba012d
+		summarizeBy: none
+		sourceColumn: booking_state_events
+
+	column initiated_events
+		dataType: int64
+		isHidden
+		lineageTag: a26a743d-af8e-49f8-b875-8a4c839500f2
+		summarizeBy: none
+		sourceColumn: initiated_events
+
+	column confirmed_events
+		dataType: int64
+		isHidden
+		lineageTag: 95c6342a-9815-4e53-86f0-89d83e84f1dc
+		summarizeBy: none
+		sourceColumn: confirmed_events
+
+	column cancelled_events
+		dataType: int64
+		isHidden
+		lineageTag: b3e566c6-234a-40fd-abdc-b6830f202391
+		summarizeBy: none
+		sourceColumn: cancelled_events
+
+	column refunded_events
+		dataType: int64
+		isHidden
+		lineageTag: 02ad686f-e14d-4869-9b16-9f015ee9eb89
+		summarizeBy: none
+		sourceColumn: refunded_events
+
+	column failed_events
+		dataType: int64
+		isHidden
+		lineageTag: 046ddb42-8986-481e-99a0-d73b3d92d7c4
+		summarizeBy: none
+		sourceColumn: failed_events
+
+	column confirmed_quantity
+		dataType: int64
+		isHidden
+		lineageTag: b7464192-41c6-4f4c-9c7f-cc8969caea4c
+		summarizeBy: none
+		sourceColumn: confirmed_quantity
+
+	column refunded_quantity
+		dataType: int64
+		isHidden
+		lineageTag: 2fbba717-a305-43e1-abc0-1cee45a1579c
+		summarizeBy: none
+		sourceColumn: refunded_quantity
+
+	column confirmed_amount
+		dataType: double
+		isHidden
+		lineageTag: 2ff151bc-918a-4e40-8c3c-041c7e8c3909
+		summarizeBy: sum
+		sourceColumn: confirmed_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column refunded_amount
+		dataType: double
+		isHidden
+		lineageTag: 786aa80c-b39e-4719-a3cf-734e26d6eaac
+		summarizeBy: sum
+		sourceColumn: refunded_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column net_booking_value_proxy
+		dataType: double
+		isHidden
+		lineageTag: a1d084fa-012a-4134-a802-6ff4178535e3
+		summarizeBy: sum
+		sourceColumn: net_booking_value_proxy
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column confirmation_share_proxy
+		dataType: double
+		isHidden
+		lineageTag: 6cb4f7d0-b77c-431a-90fe-b9d4d3def206
+		summarizeBy: none
+		sourceColumn: confirmation_share_proxy
+
+	partition BookingFunnel = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\booking_funnel_daily.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"event_date_utc", "destination_type", "destination_id", "booking_type", "channel", "currency", "booking_state_events", "initiated_events", "confirmed_events", "cancelled_events", "refunded_events", "failed_events", "confirmed_quantity", "refunded_quantity", "confirmed_amount", "refunded_amount", "net_booking_value_proxy", "confirmation_share_proxy"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"event_date_utc", type datetimezone}, {"destination_type", type text}, {"destination_id", type text}, {"booking_type", type text}, {"channel", type text}, {"currency", type text}, {"booking_state_events", Int64.Type}, {"initiated_events", Int64.Type}, {"confirmed_events", Int64.Type}, {"cancelled_events", Int64.Type}, {"refunded_events", Int64.Type}, {"failed_events", Int64.Type}, {"confirmed_quantity", Int64.Type}, {"refunded_quantity", Int64.Type}, {"confirmed_amount", type number}, {"refunded_amount", type number}, {"net_booking_value_proxy", type number}, {"confirmation_share_proxy", type number}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

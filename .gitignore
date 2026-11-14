@@ -1,0 +1,37 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Terraform local state, plans, caches, and environment values
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+**/terraform.tfvars
+**/*.auto.tfvars
+**/*.auto.tfvars.json
+
+# Local runtime data
+data/
+logs/
+checkpoints/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Power BI local/user artifacts
+*.pbix
+*.pbit
+*.abf
+**/.pbi/
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+

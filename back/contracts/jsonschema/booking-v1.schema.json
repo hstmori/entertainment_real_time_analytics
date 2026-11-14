@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/contracts/booking-v1.schema.json",
+  "title": "Entertainment Booking Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "correlation_id", "event_version", "occurred_at", "source", "booking_id", "customer_id", "booking_type", "booking_status", "quantity", "amount", "currency"],
+  "properties": {
+    "event_id": {"type": "string", "format": "uuid"},
+    "correlation_id": {"type": "string", "format": "uuid"},
+    "event_version": {"const": 1},
+    "occurred_at": {"type": "string", "format": "date-time"},
+    "source": {"type": "string", "minLength": 1, "maxLength": 100},
+    "booking_id": {"type": "string", "minLength": 1, "maxLength": 100},
+    "customer_id": {"type": "string", "minLength": 1, "maxLength": 100},
+    "booking_type": {"type": "string", "enum": ["movie_ticket", "event_ticket", "concert_ticket"]},
+    "booking_status": {"type": "string", "enum": ["initiated", "confirmed", "cancelled", "refunded", "failed"]},
+    "quantity": {"type": "integer", "minimum": 1},
+    "amount": {"type": "number", "minimum": 0},
+    "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+    "content_id": {"type": ["string", "null"], "maxLength": 100},
+    "entertainment_event_id": {"type": ["string", "null"], "maxLength": 100},
+    "venue_id": {"type": ["string", "null"], "maxLength": 100},
+    "channel": {"type": ["string", "null"], "enum": ["web", "mobile", "box_office", "partner", null]}
+  }
+}
+

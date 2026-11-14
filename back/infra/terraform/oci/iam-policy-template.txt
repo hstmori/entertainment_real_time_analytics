@@ -1,0 +1,23 @@
+# Review with the OCI tenancy administrator. Create these at tenancy/root scope
+# after replacing every <placeholder>. Do not apply this file directly.
+
+# Data Flow resource principals: one least-privilege statement per project bucket.
+ALLOW ANY-USER TO MANAGE OBJECTS IN TENANCY WHERE ALL {request.principal.type='dataflowrun', request.resource.compartment.id='<compartment_ocid>', target.bucket.name='<artifacts_bucket>'}
+ALLOW ANY-USER TO MANAGE OBJECTS IN TENANCY WHERE ALL {request.principal.type='dataflowrun', request.resource.compartment.id='<compartment_ocid>', target.bucket.name='<bronze_bucket>'}
+ALLOW ANY-USER TO MANAGE OBJECTS IN TENANCY WHERE ALL {request.principal.type='dataflowrun', request.resource.compartment.id='<compartment_ocid>', target.bucket.name='<silver_bucket>'}
+ALLOW ANY-USER TO MANAGE OBJECTS IN TENANCY WHERE ALL {request.principal.type='dataflowrun', request.resource.compartment.id='<compartment_ocid>', target.bucket.name='<gold_bucket>'}
+ALLOW ANY-USER TO MANAGE OBJECTS IN TENANCY WHERE ALL {request.principal.type='dataflowrun', request.resource.compartment.id='<compartment_ocid>', target.bucket.name='<checkpoints_bucket>'}
+ALLOW ANY-USER TO MANAGE OBJECTS IN TENANCY WHERE ALL {request.principal.type='dataflowrun', request.resource.compartment.id='<compartment_ocid>', target.bucket.name='<logs_bucket>'}
+ALLOW ANY-USER TO MANAGE OBJECTS IN TENANCY WHERE ALL {request.principal.type='dataflowrun', request.resource.compartment.id='<compartment_ocid>', target.bucket.name='<warehouse_bucket>'}
+
+# Data Flow service must be able to deliver run logs.
+ALLOW SERVICE dataflow TO READ objects IN TENANCY WHERE target.bucket.name='<logs_bucket>'
+
+# Operators: replace <data_engineers_group> and <compartment_name>.
+ALLOW GROUP <data_engineers_group> TO MANAGE dataflow-family IN COMPARTMENT <compartment_name>
+ALLOW GROUP <data_engineers_group> TO READ objectstorage-namespaces IN TENANCY
+ALLOW GROUP <data_engineers_group> TO MANAGE objects IN COMPARTMENT <compartment_name>
+
+# Vault secret access for Kafka credentials should be added only after the
+# secret OCID and the Data Flow application identity are known. Use OCI Policy
+# Builder to scope READ secret-bundles to that exact secret/application.

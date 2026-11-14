@@ -1,0 +1,20 @@
+{
+  "name": "Entertainment Executive Dark",
+  "dataColors": ["#20D9E8", "#D9E2EC", "#F5C451", "#94A3B8", "#4B5563", "#8B5CF6", "#22C55E", "#F45B69"],
+  "background": "#07111F",
+  "foreground": "#F7FAFC",
+  "tableAccent": "#16D9E3",
+  "good": "#22C55E",
+  "neutral": "#F5C451",
+  "bad": "#F45B69",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [{"show": true, "color": {"solid": {"color": "#0F1B2D"}}, "transparency": 0}],
+        "border": [{"show": true, "color": {"solid": {"color": "#29415F"}}, "radius": 8}],
+        "title": [{"show": true, "fontColor": {"solid": {"color": "#F7FAFC"}}, "fontFamily": "Segoe UI Semibold"}],
+        "visualHeader": [{"show": false}]
+      }
+    }
+  }
+}

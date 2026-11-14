@@ -1,0 +1,2793 @@
+{
+  "name": "EntertainmentAnalytics",
+  "compatibilityLevel": 1600,
+  "model": {
+    "culture": "en-US",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "sourceQueryCulture": "en-US",
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "annotations": [
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"Date\", \"ContentEngagement\", \"BookingFunnel\", \"EventPerformance\", \"SubscriptionDaily\", \"Customer360\", \"CustomerActivity\", \"CustomerAffinity\", \"CustomerRankShare\", \"RefreshAudit\", \"ExecutiveDaily\", \"StreamingRealtime\", \"ProgramEvent\", \"EventSalesPace\", \"EventSalesDetail\", \"OperationsRealtime\"]"
+      },
+      {
+        "name": "__PBI_TimeIntelligenceEnabled",
+        "value": "0"
+      },
+      {
+        "name": "PBI_ProTooling",
+        "value": "[\"MCP-PBIModeling\", \"DevMode\"]"
+      },
+      {
+        "name": "PBIDesktopVersion",
+        "value": "2.142.1277.0 (25.04)+014fde450f93691fc9537f0758d73d1c5df153ef"
+      }
+    ],
+    "expressions": [
+      {
+        "name": "DataRoot",
+        "kind": "m",
+        "expression": "\"Y:\\Data Analyst\\Data Work\\Project Analyst\\RealTimeDataPipeline_Demo_Package_Github\\back\\artifacts\\powerbi_demo\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]"
+      }
+    ],
+    "tables": [
+      {
+        "name": "Date",
+        "description": "Governed Gold export: date.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "sourceColumn": "date",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          }
+        ],
+        "measures": [],
+        "partitions": [
+          {
+            "name": "Date",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\date.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"date\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"date\", type datetimezone}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "ContentEngagement",
+        "description": "Governed Gold export: content_engagement_hourly.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "event_hour_utc",
+            "dataType": "dateTime",
+            "sourceColumn": "event_hour_utc",
+            "summarizeBy": "none",
+            "isHidden": true,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "event_date_utc",
+            "dataType": "dateTime",
+            "sourceColumn": "event_date_utc",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "content_id",
+            "dataType": "string",
+            "sourceColumn": "content_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "device_type",
+            "dataType": "string",
+            "sourceColumn": "device_type",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "activity_events",
+            "dataType": "int64",
+            "sourceColumn": "activity_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "active_users",
+            "dataType": "int64",
+            "sourceColumn": "active_users",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "play_events",
+            "dataType": "int64",
+            "sourceColumn": "play_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "completion_events",
+            "dataType": "int64",
+            "sourceColumn": "completion_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "completion_per_play_proxy",
+            "dataType": "double",
+            "sourceColumn": "completion_per_play_proxy",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "observed_position_seconds",
+            "dataType": "double",
+            "sourceColumn": "observed_position_seconds",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "measures": [
+          {
+            "name": "Sự kiện hoạt động",
+            "expression": "SUM(ContentEngagement[activity_events])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Lượt phát",
+            "expression": "SUM(ContentEngagement[play_events])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Lượt hoàn tất",
+            "expression": "SUM(ContentEngagement[completion_events])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Tỷ lệ hoàn tất proxy",
+            "expression": "DIVIDE([Lượt hoàn tất],[Lượt phát])",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Vị trí quan sát (giây)",
+            "expression": "SUM(ContentEngagement[observed_position_seconds])",
+            "formatString": "#,0.0",
+            "displayFolder": "Dashboard"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ContentEngagement",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\content_engagement_hourly.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"event_hour_utc\", \"event_date_utc\", \"content_id\", \"device_type\", \"activity_events\", \"active_users\", \"play_events\", \"completion_events\", \"completion_per_play_proxy\", \"observed_position_seconds\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"event_hour_utc\", type datetimezone}, {\"event_date_utc\", type datetimezone}, {\"content_id\", type text}, {\"device_type\", type text}, {\"activity_events\", Int64.Type}, {\"active_users\", Int64.Type}, {\"play_events\", Int64.Type}, {\"completion_events\", Int64.Type}, {\"completion_per_play_proxy\", type number}, {\"observed_position_seconds\", type number}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "BookingFunnel",
+        "description": "Governed Gold export: booking_funnel_daily.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "event_date_utc",
+            "dataType": "dateTime",
+            "sourceColumn": "event_date_utc",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "destination_type",
+            "dataType": "string",
+            "sourceColumn": "destination_type",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "destination_id",
+            "dataType": "string",
+            "sourceColumn": "destination_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "booking_type",
+            "dataType": "string",
+            "sourceColumn": "booking_type",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "channel",
+            "dataType": "string",
+            "sourceColumn": "channel",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "currency",
+            "dataType": "string",
+            "sourceColumn": "currency",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "booking_state_events",
+            "dataType": "int64",
+            "sourceColumn": "booking_state_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "initiated_events",
+            "dataType": "int64",
+            "sourceColumn": "initiated_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "confirmed_events",
+            "dataType": "int64",
+            "sourceColumn": "confirmed_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "cancelled_events",
+            "dataType": "int64",
+            "sourceColumn": "cancelled_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "refunded_events",
+            "dataType": "int64",
+            "sourceColumn": "refunded_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "failed_events",
+            "dataType": "int64",
+            "sourceColumn": "failed_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "confirmed_quantity",
+            "dataType": "int64",
+            "sourceColumn": "confirmed_quantity",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "refunded_quantity",
+            "dataType": "int64",
+            "sourceColumn": "refunded_quantity",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "confirmed_amount",
+            "dataType": "decimal",
+            "sourceColumn": "confirmed_amount",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "refunded_amount",
+            "dataType": "decimal",
+            "sourceColumn": "refunded_amount",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "net_booking_value_proxy",
+            "dataType": "decimal",
+            "sourceColumn": "net_booking_value_proxy",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "confirmation_share_proxy",
+            "dataType": "double",
+            "sourceColumn": "confirmation_share_proxy",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "measures": [
+          {
+            "name": "Sự kiện booking",
+            "expression": "SUM(BookingFunnel[booking_state_events])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Booking xác nhận",
+            "expression": "SUM(BookingFunnel[confirmed_events])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Booking hoàn tiền",
+            "expression": "SUM(BookingFunnel[refunded_events])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Booking thất bại",
+            "expression": "SUM(BookingFunnel[failed_events])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Vé xác nhận",
+            "expression": "SUM(BookingFunnel[confirmed_quantity])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Giá trị xác nhận",
+            "expression": "SUM(BookingFunnel[confirmed_amount])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Giá trị hoàn tiền",
+            "expression": "SUM(BookingFunnel[refunded_amount])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Giá trị booking ròng proxy",
+            "expression": "SUM(BookingFunnel[net_booking_value_proxy])",
+            "formatString": "#,0;(#,0)",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Tỷ trọng xác nhận proxy",
+            "expression": "DIVIDE([Booking xác nhận],[Sự kiện booking])",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "BookingFunnel",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\booking_funnel_daily.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"event_date_utc\", \"destination_type\", \"destination_id\", \"booking_type\", \"channel\", \"currency\", \"booking_state_events\", \"initiated_events\", \"confirmed_events\", \"cancelled_events\", \"refunded_events\", \"failed_events\", \"confirmed_quantity\", \"refunded_quantity\", \"confirmed_amount\", \"refunded_amount\", \"net_booking_value_proxy\", \"confirmation_share_proxy\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"event_date_utc\", type datetimezone}, {\"destination_type\", type text}, {\"destination_id\", type text}, {\"booking_type\", type text}, {\"channel\", type text}, {\"currency\", type text}, {\"booking_state_events\", Int64.Type}, {\"initiated_events\", Int64.Type}, {\"confirmed_events\", Int64.Type}, {\"cancelled_events\", Int64.Type}, {\"refunded_events\", Int64.Type}, {\"failed_events\", Int64.Type}, {\"confirmed_quantity\", Int64.Type}, {\"refunded_quantity\", Int64.Type}, {\"confirmed_amount\", type number}, {\"refunded_amount\", type number}, {\"net_booking_value_proxy\", type number}, {\"confirmation_share_proxy\", type number}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "EventPerformance",
+        "description": "Governed Gold export: event_performance.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "entertainment_event_id",
+            "dataType": "string",
+            "sourceColumn": "entertainment_event_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "currency",
+            "dataType": "string",
+            "sourceColumn": "currency",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "confirmed_bookings",
+            "dataType": "int64",
+            "sourceColumn": "confirmed_bookings",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "refunded_bookings",
+            "dataType": "int64",
+            "sourceColumn": "refunded_bookings",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "confirmed_tickets",
+            "dataType": "int64",
+            "sourceColumn": "confirmed_tickets",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "refunded_tickets",
+            "dataType": "int64",
+            "sourceColumn": "refunded_tickets",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "net_booking_value_proxy",
+            "dataType": "decimal",
+            "sourceColumn": "net_booking_value_proxy",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "attendance_records",
+            "dataType": "int64",
+            "sourceColumn": "attendance_records",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "checked_in",
+            "dataType": "int64",
+            "sourceColumn": "checked_in",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "no_show",
+            "dataType": "int64",
+            "sourceColumn": "no_show",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "rejected",
+            "dataType": "int64",
+            "sourceColumn": "rejected",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "attendance_rate_proxy",
+            "dataType": "double",
+            "sourceColumn": "attendance_rate_proxy",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "no_show_rate_proxy",
+            "dataType": "double",
+            "sourceColumn": "no_show_rate_proxy",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "first_booking_event_at",
+            "dataType": "dateTime",
+            "sourceColumn": "first_booking_event_at",
+            "summarizeBy": "none",
+            "isHidden": true,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "last_booking_event_at",
+            "dataType": "dateTime",
+            "sourceColumn": "last_booking_event_at",
+            "summarizeBy": "none",
+            "isHidden": true,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "first_attendance_event_at",
+            "dataType": "dateTime",
+            "sourceColumn": "first_attendance_event_at",
+            "summarizeBy": "none",
+            "isHidden": true,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "last_attendance_event_at",
+            "dataType": "dateTime",
+            "sourceColumn": "last_attendance_event_at",
+            "summarizeBy": "none",
+            "isHidden": true,
+            "formatString": "dd/MM/yyyy HH:mm"
+          }
+        ],
+        "measures": [
+          {
+            "name": "Sự kiện live",
+            "expression": "DISTINCTCOUNT(EventPerformance[entertainment_event_id])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Vé live xác nhận",
+            "expression": "SUM(EventPerformance[confirmed_tickets])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Check-in",
+            "expression": "SUM(EventPerformance[checked_in])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "No-show",
+            "expression": "SUM(EventPerformance[no_show])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Tỷ lệ tham dự proxy",
+            "expression": "DIVIDE([Check-in],SUM(EventPerformance[attendance_records]))",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "EventPerformance",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\event_performance.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"entertainment_event_id\", \"currency\", \"confirmed_bookings\", \"refunded_bookings\", \"confirmed_tickets\", \"refunded_tickets\", \"net_booking_value_proxy\", \"attendance_records\", \"checked_in\", \"no_show\", \"rejected\", \"attendance_rate_proxy\", \"no_show_rate_proxy\", \"first_booking_event_at\", \"last_booking_event_at\", \"first_attendance_event_at\", \"last_attendance_event_at\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"entertainment_event_id\", type text}, {\"currency\", type text}, {\"confirmed_bookings\", Int64.Type}, {\"refunded_bookings\", Int64.Type}, {\"confirmed_tickets\", Int64.Type}, {\"refunded_tickets\", Int64.Type}, {\"net_booking_value_proxy\", type number}, {\"attendance_records\", Int64.Type}, {\"checked_in\", Int64.Type}, {\"no_show\", Int64.Type}, {\"rejected\", Int64.Type}, {\"attendance_rate_proxy\", type number}, {\"no_show_rate_proxy\", type number}, {\"first_booking_event_at\", type datetimezone}, {\"last_booking_event_at\", type datetimezone}, {\"first_attendance_event_at\", type datetimezone}, {\"last_attendance_event_at\", type datetimezone}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "SubscriptionDaily",
+        "description": "Governed Gold export: subscription_daily.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "event_date_utc",
+            "dataType": "dateTime",
+            "sourceColumn": "event_date_utc",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "plan_id",
+            "dataType": "string",
+            "sourceColumn": "plan_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "currency",
+            "dataType": "string",
+            "sourceColumn": "currency",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "subscription_events",
+            "dataType": "int64",
+            "sourceColumn": "subscription_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "started_events",
+            "dataType": "int64",
+            "sourceColumn": "started_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "renewed_events",
+            "dataType": "int64",
+            "sourceColumn": "renewed_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "upgraded_events",
+            "dataType": "int64",
+            "sourceColumn": "upgraded_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "downgraded_events",
+            "dataType": "int64",
+            "sourceColumn": "downgraded_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "paused_events",
+            "dataType": "int64",
+            "sourceColumn": "paused_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "cancelled_events",
+            "dataType": "int64",
+            "sourceColumn": "cancelled_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "expired_events",
+            "dataType": "int64",
+            "sourceColumn": "expired_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "mrr_event_value_proxy",
+            "dataType": "decimal",
+            "sourceColumn": "mrr_event_value_proxy",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "cancelled_value_context",
+            "dataType": "decimal",
+            "sourceColumn": "cancelled_value_context",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "measures": [
+          {
+            "name": "Sự kiện subscription",
+            "expression": "SUM(SubscriptionDaily[subscription_events])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Đăng ký mới",
+            "expression": "SUM(SubscriptionDaily[started_events])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Gia hạn",
+            "expression": "SUM(SubscriptionDaily[renewed_events])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Hủy subscription",
+            "expression": "SUM(SubscriptionDaily[cancelled_events])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "MRR event value proxy",
+            "expression": "SUM(SubscriptionDaily[mrr_event_value_proxy])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "SubscriptionDaily",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\subscription_daily.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"event_date_utc\", \"plan_id\", \"currency\", \"subscription_events\", \"started_events\", \"renewed_events\", \"upgraded_events\", \"downgraded_events\", \"paused_events\", \"cancelled_events\", \"expired_events\", \"mrr_event_value_proxy\", \"cancelled_value_context\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"event_date_utc\", type datetimezone}, {\"plan_id\", type text}, {\"currency\", type text}, {\"subscription_events\", Int64.Type}, {\"started_events\", Int64.Type}, {\"renewed_events\", Int64.Type}, {\"upgraded_events\", Int64.Type}, {\"downgraded_events\", Int64.Type}, {\"paused_events\", Int64.Type}, {\"cancelled_events\", Int64.Type}, {\"expired_events\", Int64.Type}, {\"mrr_event_value_proxy\", type number}, {\"cancelled_value_context\", type number}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Customer360",
+        "description": "Governed Gold export: customer_360.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "customer_id",
+            "dataType": "string",
+            "sourceColumn": "customer_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "unified_customer_id",
+            "dataType": "string",
+            "sourceColumn": "unified_customer_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "region",
+            "dataType": "string",
+            "sourceColumn": "region",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "consent_status",
+            "dataType": "string",
+            "sourceColumn": "consent_status",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "preferred_device",
+            "dataType": "string",
+            "sourceColumn": "preferred_device",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "first_seen_at",
+            "dataType": "dateTime",
+            "sourceColumn": "first_seen_at",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "last_seen_at",
+            "dataType": "dateTime",
+            "sourceColumn": "last_seen_at",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "observed_days",
+            "dataType": "int64",
+            "sourceColumn": "observed_days",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "recency_days",
+            "dataType": "int64",
+            "sourceColumn": "recency_days",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "total_events",
+            "dataType": "int64",
+            "sourceColumn": "total_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "activity_events",
+            "dataType": "int64",
+            "sourceColumn": "activity_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "active_days",
+            "dataType": "int64",
+            "sourceColumn": "active_days",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "sessions",
+            "dataType": "int64",
+            "sourceColumn": "sessions",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "watch_hours_90d",
+            "dataType": "double",
+            "sourceColumn": "watch_hours_90d",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "play_events",
+            "dataType": "int64",
+            "sourceColumn": "play_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "completion_events",
+            "dataType": "int64",
+            "sourceColumn": "completion_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "completion_rate",
+            "dataType": "double",
+            "sourceColumn": "completion_rate",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "search_events",
+            "dataType": "int64",
+            "sourceColumn": "search_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "favorite_content_id",
+            "dataType": "string",
+            "sourceColumn": "favorite_content_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "booking_state_events",
+            "dataType": "int64",
+            "sourceColumn": "booking_state_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "confirmed_bookings",
+            "dataType": "int64",
+            "sourceColumn": "confirmed_bookings",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "refunded_bookings",
+            "dataType": "int64",
+            "sourceColumn": "refunded_bookings",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "failed_bookings",
+            "dataType": "int64",
+            "sourceColumn": "failed_bookings",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "confirmed_tickets",
+            "dataType": "int64",
+            "sourceColumn": "confirmed_tickets",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ticket_spend_12m",
+            "dataType": "decimal",
+            "sourceColumn": "ticket_spend_12m",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "subscription_spend_12m",
+            "dataType": "decimal",
+            "sourceColumn": "subscription_spend_12m",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "content_spend_12m",
+            "dataType": "decimal",
+            "sourceColumn": "content_spend_12m",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "refund_value_12m",
+            "dataType": "decimal",
+            "sourceColumn": "refund_value_12m",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "net_spend_12m",
+            "dataType": "decimal",
+            "sourceColumn": "net_spend_12m",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "lifetime_value_proxy",
+            "dataType": "decimal",
+            "sourceColumn": "lifetime_value_proxy",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "contribution_margin_proxy",
+            "dataType": "decimal",
+            "sourceColumn": "contribution_margin_proxy",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "attendance_records",
+            "dataType": "int64",
+            "sourceColumn": "attendance_records",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "checked_in_events",
+            "dataType": "int64",
+            "sourceColumn": "checked_in_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "no_show_events",
+            "dataType": "int64",
+            "sourceColumn": "no_show_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "attendance_rate",
+            "dataType": "double",
+            "sourceColumn": "attendance_rate",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "subscription_events",
+            "dataType": "int64",
+            "sourceColumn": "subscription_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "latest_subscription_status",
+            "dataType": "string",
+            "sourceColumn": "latest_subscription_status",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "latest_plan_id",
+            "dataType": "string",
+            "sourceColumn": "latest_plan_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "active_subscription",
+            "dataType": "boolean",
+            "sourceColumn": "active_subscription",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "subscription_tenure_months",
+            "dataType": "int64",
+            "sourceColumn": "subscription_tenure_months",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "domain_count",
+            "dataType": "int64",
+            "sourceColumn": "domain_count",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "service_mix",
+            "dataType": "string",
+            "sourceColumn": "service_mix",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "engagement_score",
+            "dataType": "double",
+            "sourceColumn": "engagement_score",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "behavior_segment",
+            "dataType": "string",
+            "sourceColumn": "behavior_segment",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "engagement_trend_pct",
+            "dataType": "double",
+            "sourceColumn": "engagement_trend_pct",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "behavior_risk",
+            "dataType": "string",
+            "sourceColumn": "behavior_risk",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "behavior_risk_color",
+            "dataType": "string",
+            "sourceColumn": "behavior_risk_color",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "member_rank",
+            "dataType": "string",
+            "sourceColumn": "member_rank",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "member_rank_order",
+            "dataType": "int64",
+            "sourceColumn": "member_rank_order",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "member_rank_color",
+            "dataType": "string",
+            "sourceColumn": "member_rank_color",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "gold_plus_flag",
+            "dataType": "boolean",
+            "sourceColumn": "gold_plus_flag",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "high_spend_low_engagement_flag",
+            "dataType": "boolean",
+            "sourceColumn": "high_spend_low_engagement_flag",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "next_best_action",
+            "dataType": "string",
+            "sourceColumn": "next_best_action",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "profile_note",
+            "dataType": "string",
+            "sourceColumn": "profile_note",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "measures": [
+          {
+            "name": "Khách hàng",
+            "expression": "COUNTROWS(Customer360)",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Net Spend 12M",
+            "expression": "DIVIDE(SUM(Customer360[net_spend_12m]),1000000)",
+            "formatString": "#,0.0 \"triệu\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Net Spend TB 12M",
+            "expression": "DIVIDE(AVERAGE(Customer360[net_spend_12m]),1000000)",
+            "formatString": "#,0.0 \"triệu\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Customer Value 12M",
+            "expression": "IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),DIVIDE(MAX(Customer360[net_spend_12m]),1000000))",
+            "formatString": "#,0.0 \"triệu\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Lifetime Value Proxy",
+            "expression": "IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),DIVIDE(MAX(Customer360[lifetime_value_proxy]),1000000))",
+            "formatString": "#,0.0 \"triệu\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Customer Contribution Margin",
+            "expression": "IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),DIVIDE(MAX(Customer360[contribution_margin_proxy]),1000000))",
+            "formatString": "#,0.0 \"triệu\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Gold+ Customers",
+            "expression": "COALESCE(COUNTROWS(FILTER(Customer360,Customer360[gold_plus_flag]=TRUE())),0)",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Gold+ Customer Share",
+            "expression": "DIVIDE([Gold+ Customers],[Khách hàng])",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Gold+ Spend",
+            "expression": "DIVIDE(CALCULATE(SUM(Customer360[net_spend_12m]),Customer360[gold_plus_flag]=TRUE()),1000000)",
+            "formatString": "#,0.0 \"triệu\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Gold+ Spend Share",
+            "expression": "DIVIDE(CALCULATE(SUM(Customer360[net_spend_12m]),Customer360[gold_plus_flag]=TRUE()),SUM(Customer360[net_spend_12m]))",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Khách đa dịch vụ",
+            "expression": "COALESCE(COUNTROWS(FILTER(Customer360,Customer360[domain_count]>=3)),0)",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Tỷ lệ khách đa dịch vụ",
+            "expression": "DIVIDE([Khách đa dịch vụ],[Khách hàng])",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "High-spend giảm tương tác",
+            "expression": "COALESCE(COUNTROWS(FILTER(Customer360,Customer360[high_spend_low_engagement_flag]=TRUE())),0)",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Engagement Score",
+            "expression": "AVERAGE(Customer360[engagement_score])",
+            "formatString": "0.0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Engagement Score Profile",
+            "expression": "IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[engagement_score]))",
+            "formatString": "0.0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Total Activities Profile",
+            "expression": "IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[total_events]))",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Watch Hours Profile",
+            "expression": "IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[watch_hours_90d]))",
+            "formatString": "#,0.0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Watch Hours TB",
+            "expression": "AVERAGE(Customer360[watch_hours_90d])",
+            "formatString": "#,0.0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Sessions Profile",
+            "expression": "IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[sessions]))",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Confirmed Tickets Profile",
+            "expression": "IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[confirmed_tickets]))",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Bookings TB",
+            "expression": "AVERAGE(Customer360[confirmed_bookings])",
+            "formatString": "0.0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Attendance Profile",
+            "expression": "IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[checked_in_events]))",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Attendance TB",
+            "expression": "AVERAGE(Customer360[checked_in_events])",
+            "formatString": "0.0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Subscription Events Profile",
+            "expression": "IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[subscription_events]))",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Subscription Activity TB",
+            "expression": "AVERAGE(Customer360[subscription_events])",
+            "formatString": "0.0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Completion Rate Profile",
+            "expression": "IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[completion_rate]))",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Recency TB (ngày)",
+            "expression": "AVERAGE(Customer360[recency_days])",
+            "formatString": "0.0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Recency Profile",
+            "expression": "IF(ISFILTERED(Customer360[customer_id]) && HASONEVALUE(Customer360[customer_id]),MAX(Customer360[recency_days]))",
+            "formatString": "#,0 ngày",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Active Subscription Customers",
+            "expression": "COALESCE(COUNTROWS(FILTER(Customer360,Customer360[active_subscription]=TRUE())),0)",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Member Rank Profile",
+            "expression": "SELECTEDVALUE(Customer360[member_rank],\"Chọn 1 khách hàng\")",
+            "formatString": "",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Behavior Risk Profile",
+            "expression": "SELECTEDVALUE(Customer360[behavior_risk],\"Chọn 1 khách hàng\")",
+            "formatString": "",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Màu rủi ro hành vi",
+            "expression": "SELECTEDVALUE(Customer360[behavior_risk_color])",
+            "displayFolder": "Formatting"
+          },
+          {
+            "name": "Màu hạng thành viên",
+            "expression": "SWITCH(SELECTEDVALUE(Customer360[member_rank]), \"Diamond\", \"#20D9E8\", \"Platinum\", \"#D9E2EC\", \"Gold\", \"#F5C451\", \"Silver\", \"#94A3B8\", \"Basic\", \"#64748B\", BLANK())",
+            "displayFolder": "Formatting"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Customer360",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\customer_360.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"customer_id\", \"unified_customer_id\", \"region\", \"consent_status\", \"preferred_device\", \"first_seen_at\", \"last_seen_at\", \"observed_days\", \"recency_days\", \"total_events\", \"activity_events\", \"active_days\", \"sessions\", \"watch_hours_90d\", \"play_events\", \"completion_events\", \"completion_rate\", \"search_events\", \"favorite_content_id\", \"booking_state_events\", \"confirmed_bookings\", \"refunded_bookings\", \"failed_bookings\", \"confirmed_tickets\", \"ticket_spend_12m\", \"subscription_spend_12m\", \"content_spend_12m\", \"refund_value_12m\", \"net_spend_12m\", \"lifetime_value_proxy\", \"contribution_margin_proxy\", \"attendance_records\", \"checked_in_events\", \"no_show_events\", \"attendance_rate\", \"subscription_events\", \"latest_subscription_status\", \"latest_plan_id\", \"active_subscription\", \"subscription_tenure_months\", \"domain_count\", \"service_mix\", \"engagement_score\", \"behavior_segment\", \"engagement_trend_pct\", \"behavior_risk\", \"behavior_risk_color\", \"member_rank\", \"member_rank_order\", \"member_rank_color\", \"gold_plus_flag\", \"high_spend_low_engagement_flag\", \"next_best_action\", \"profile_note\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"customer_id\", type text}, {\"unified_customer_id\", type text}, {\"region\", type text}, {\"consent_status\", type text}, {\"preferred_device\", type text}, {\"first_seen_at\", type datetimezone}, {\"last_seen_at\", type datetimezone}, {\"observed_days\", Int64.Type}, {\"recency_days\", Int64.Type}, {\"total_events\", Int64.Type}, {\"activity_events\", Int64.Type}, {\"active_days\", Int64.Type}, {\"sessions\", Int64.Type}, {\"watch_hours_90d\", type number}, {\"play_events\", Int64.Type}, {\"completion_events\", Int64.Type}, {\"completion_rate\", type number}, {\"search_events\", Int64.Type}, {\"favorite_content_id\", type text}, {\"booking_state_events\", Int64.Type}, {\"confirmed_bookings\", Int64.Type}, {\"refunded_bookings\", Int64.Type}, {\"failed_bookings\", Int64.Type}, {\"confirmed_tickets\", Int64.Type}, {\"ticket_spend_12m\", type number}, {\"subscription_spend_12m\", type number}, {\"content_spend_12m\", type number}, {\"refund_value_12m\", type number}, {\"net_spend_12m\", type number}, {\"lifetime_value_proxy\", type number}, {\"contribution_margin_proxy\", type number}, {\"attendance_records\", Int64.Type}, {\"checked_in_events\", Int64.Type}, {\"no_show_events\", Int64.Type}, {\"attendance_rate\", type number}, {\"subscription_events\", Int64.Type}, {\"latest_subscription_status\", type text}, {\"latest_plan_id\", type text}, {\"active_subscription\", type logical}, {\"subscription_tenure_months\", Int64.Type}, {\"domain_count\", Int64.Type}, {\"service_mix\", type text}, {\"engagement_score\", type number}, {\"behavior_segment\", type text}, {\"engagement_trend_pct\", type number}, {\"behavior_risk\", type text}, {\"behavior_risk_color\", type text}, {\"member_rank\", type text}, {\"member_rank_order\", Int64.Type}, {\"member_rank_color\", type text}, {\"gold_plus_flag\", type logical}, {\"high_spend_low_engagement_flag\", type logical}, {\"next_best_action\", type text}, {\"profile_note\", type text}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "CustomerActivity",
+        "description": "Governed Gold export: customer_activity.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "event_id",
+            "dataType": "string",
+            "sourceColumn": "event_id",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "customer_id",
+            "dataType": "string",
+            "sourceColumn": "customer_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "occurred_at",
+            "dataType": "dateTime",
+            "sourceColumn": "occurred_at",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "event_date_utc",
+            "dataType": "dateTime",
+            "sourceColumn": "event_date_utc",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "event_type",
+            "dataType": "string",
+            "sourceColumn": "event_type",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "domain",
+            "dataType": "string",
+            "sourceColumn": "domain",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "action",
+            "dataType": "string",
+            "sourceColumn": "action",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "activity_label",
+            "dataType": "string",
+            "sourceColumn": "activity_label",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "activity_detail",
+            "dataType": "string",
+            "sourceColumn": "activity_detail",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "activity_result",
+            "dataType": "string",
+            "sourceColumn": "activity_result",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "activity_color",
+            "dataType": "string",
+            "sourceColumn": "activity_color",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "source",
+            "dataType": "string",
+            "sourceColumn": "source",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "device_type",
+            "dataType": "string",
+            "sourceColumn": "device_type",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "content_id",
+            "dataType": "string",
+            "sourceColumn": "content_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "destination_id",
+            "dataType": "string",
+            "sourceColumn": "destination_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "plan_id",
+            "dataType": "string",
+            "sourceColumn": "plan_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "quantity",
+            "dataType": "int64",
+            "sourceColumn": "quantity",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "amount",
+            "dataType": "decimal",
+            "sourceColumn": "amount",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "currency",
+            "dataType": "string",
+            "sourceColumn": "currency",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "event_count",
+            "dataType": "int64",
+            "sourceColumn": "event_count",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "measures": [
+          {
+            "name": "Customer Activities",
+            "expression": "SUM(CustomerActivity[event_count])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Activity Amount",
+            "expression": "DIVIDE(SUM(CustomerActivity[amount]),1000000)",
+            "formatString": "#,0.0 \"triệu\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Màu kết quả hoạt động",
+            "expression": "SWITCH(SELECTEDVALUE(CustomerActivity[activity_result]), \"Thành công\", \"#34D399\", \"Đang xử lý\", \"#FBBF24\", \"Thất bại\", \"#F87171\", \"Thông tin\", \"#9FB3C8\", BLANK())",
+            "displayFolder": "Formatting"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "CustomerActivity",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\customer_activity.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"event_id\", \"customer_id\", \"occurred_at\", \"event_date_utc\", \"event_type\", \"domain\", \"action\", \"activity_label\", \"activity_detail\", \"activity_result\", \"activity_color\", \"source\", \"device_type\", \"content_id\", \"destination_id\", \"plan_id\", \"quantity\", \"amount\", \"currency\", \"event_count\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"event_id\", type text}, {\"customer_id\", type text}, {\"occurred_at\", type datetimezone}, {\"event_date_utc\", type datetimezone}, {\"event_type\", type text}, {\"domain\", type text}, {\"action\", type text}, {\"activity_label\", type text}, {\"activity_detail\", type text}, {\"activity_result\", type text}, {\"activity_color\", type text}, {\"source\", type text}, {\"device_type\", type text}, {\"content_id\", type text}, {\"destination_id\", type text}, {\"plan_id\", type text}, {\"quantity\", Int64.Type}, {\"amount\", type number}, {\"currency\", type text}, {\"event_count\", Int64.Type}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "CustomerAffinity",
+        "description": "Governed Gold export: customer_affinity.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "customer_id",
+            "dataType": "string",
+            "sourceColumn": "customer_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "affinity_name",
+            "dataType": "string",
+            "sourceColumn": "affinity_name",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "affinity_score",
+            "dataType": "double",
+            "sourceColumn": "affinity_score",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "affinity_rank",
+            "dataType": "int64",
+            "sourceColumn": "affinity_rank",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "affinity_color",
+            "dataType": "string",
+            "sourceColumn": "affinity_color",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "is_preferred",
+            "dataType": "boolean",
+            "sourceColumn": "is_preferred",
+            "summarizeBy": "none",
+            "isHidden": false
+          }
+        ],
+        "measures": [
+          {
+            "name": "Affinity Score",
+            "expression": "AVERAGE(CustomerAffinity[affinity_score])",
+            "formatString": "0.0",
+            "displayFolder": "Dashboard"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "CustomerAffinity",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\customer_affinity.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"customer_id\", \"affinity_name\", \"affinity_score\", \"affinity_rank\", \"affinity_color\", \"is_preferred\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"customer_id\", type text}, {\"affinity_name\", type text}, {\"affinity_score\", type number}, {\"affinity_rank\", Int64.Type}, {\"affinity_color\", type text}, {\"is_preferred\", type logical}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "CustomerRankShare",
+        "description": "Governed Gold export: customer_rank_share.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "metric_type",
+            "dataType": "string",
+            "sourceColumn": "metric_type",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "member_rank",
+            "dataType": "string",
+            "sourceColumn": "member_rank",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "member_rank_order",
+            "dataType": "int64",
+            "sourceColumn": "member_rank_order",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "member_rank_color",
+            "dataType": "string",
+            "sourceColumn": "member_rank_color",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "metric_value",
+            "dataType": "decimal",
+            "sourceColumn": "metric_value",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "metric_share",
+            "dataType": "double",
+            "sourceColumn": "metric_share",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "customer_count",
+            "dataType": "int64",
+            "sourceColumn": "customer_count",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "net_spend_12m",
+            "dataType": "decimal",
+            "sourceColumn": "net_spend_12m",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "measures": [
+          {
+            "name": "Rank Share",
+            "expression": "VAR Metric=SELECTEDVALUE(CustomerRankShare[metric_type]) VAR Ranks=VALUES(CustomerRankShare[member_rank]) VAR Part=IF(Metric=\"Tỷ lệ chi tiêu\",CALCULATE(SUM(Customer360[net_spend_12m]),KEEPFILTERS(TREATAS(Ranks,Customer360[member_rank]))),CALCULATE(COUNTROWS(Customer360),KEEPFILTERS(TREATAS(Ranks,Customer360[member_rank])))) VAR Total=IF(Metric=\"Tỷ lệ chi tiêu\",SUM(Customer360[net_spend_12m]),COUNTROWS(Customer360)) RETURN DIVIDE(Part,Total)",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Rank Customer Count",
+            "expression": "MAX(CustomerRankShare[customer_count])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Rank Spend",
+            "expression": "DIVIDE(MAX(CustomerRankShare[net_spend_12m]),1000000)",
+            "formatString": "#,0.0 \"triệu\"",
+            "displayFolder": "Dashboard"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "CustomerRankShare",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\customer_rank_share.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"metric_type\", \"member_rank\", \"member_rank_order\", \"member_rank_color\", \"metric_value\", \"metric_share\", \"customer_count\", \"net_spend_12m\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"metric_type\", type text}, {\"member_rank\", type text}, {\"member_rank_order\", Int64.Type}, {\"member_rank_color\", type text}, {\"metric_value\", type number}, {\"metric_share\", type number}, {\"customer_count\", Int64.Type}, {\"net_spend_12m\", type number}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "RefreshAudit",
+        "description": "Governed Gold export: refresh_audit.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "run_id",
+            "dataType": "string",
+            "sourceColumn": "run_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "model_name",
+            "dataType": "string",
+            "sourceColumn": "model_name",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "refreshed_at",
+            "dataType": "dateTime",
+            "sourceColumn": "refreshed_at",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "row_count",
+            "dataType": "int64",
+            "sourceColumn": "row_count",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "silver_snapshot_rows",
+            "dataType": "int64",
+            "sourceColumn": "silver_snapshot_rows",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "status",
+            "dataType": "string",
+            "sourceColumn": "status",
+            "summarizeBy": "none",
+            "isHidden": false
+          }
+        ],
+        "measures": [
+          {
+            "name": "Số lần refresh",
+            "expression": "DISTINCTCOUNT(RefreshAudit[run_id])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Refresh gần nhất",
+            "expression": "MAX(RefreshAudit[refreshed_at])",
+            "formatString": "dd/MM/yyyy HH:mm",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Models đã refresh",
+            "expression": "COUNTROWS(RefreshAudit)",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "RefreshAudit",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\refresh_audit.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"run_id\", \"model_name\", \"refreshed_at\", \"row_count\", \"silver_snapshot_rows\", \"status\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"run_id\", type text}, {\"model_name\", type text}, {\"refreshed_at\", type datetimezone}, {\"row_count\", Int64.Type}, {\"silver_snapshot_rows\", Int64.Type}, {\"status\", type text}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "ExecutiveDaily",
+        "description": "Governed Gold export: executive_daily.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "event_date_utc",
+            "dataType": "dateTime",
+            "sourceColumn": "event_date_utc",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "business_line",
+            "dataType": "string",
+            "sourceColumn": "business_line",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "gross_value",
+            "dataType": "decimal",
+            "sourceColumn": "gross_value",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "net_revenue",
+            "dataType": "decimal",
+            "sourceColumn": "net_revenue",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "variable_cost",
+            "dataType": "decimal",
+            "sourceColumn": "variable_cost",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "contribution_margin",
+            "dataType": "decimal",
+            "sourceColumn": "contribution_margin",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "refund_value",
+            "dataType": "decimal",
+            "sourceColumn": "refund_value",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "transactions",
+            "dataType": "int64",
+            "sourceColumn": "transactions",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "paying_customers_line",
+            "dataType": "int64",
+            "sourceColumn": "paying_customers_line",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "new_customers",
+            "dataType": "int64",
+            "sourceColumn": "new_customers",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "marketing_spend",
+            "dataType": "decimal",
+            "sourceColumn": "marketing_spend",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "target_revenue",
+            "dataType": "decimal",
+            "sourceColumn": "target_revenue",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "measures": [
+          {
+            "name": "Gross Value",
+            "expression": "DIVIDE(SUM(ExecutiveDaily[gross_value]),1000000000)",
+            "formatString": "#,0.0 \"tỷ\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Doanh thu thuần",
+            "expression": "DIVIDE(SUM(ExecutiveDaily[net_revenue]),1000000000)",
+            "formatString": "#,0.0 \"tỷ\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Chi phí biến đổi",
+            "expression": "DIVIDE(SUM(ExecutiveDaily[variable_cost]),1000000000)",
+            "formatString": "#,0.0 \"tỷ\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Contribution Margin",
+            "expression": "DIVIDE(SUM(ExecutiveDaily[contribution_margin]),1000000000)",
+            "formatString": "#,0.0 \"tỷ\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Contribution Margin %",
+            "expression": "DIVIDE([Contribution Margin],[Doanh thu thuần])",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Hoàn tiền",
+            "expression": "DIVIDE(SUM(ExecutiveDaily[refund_value]),1000000000)",
+            "formatString": "#,0.0 \"tỷ\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Giao dịch",
+            "expression": "SUM(ExecutiveDaily[transactions])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Khách trả tiền theo dịch vụ",
+            "expression": "SUM(ExecutiveDaily[paying_customers_line])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Khách mới",
+            "expression": "SUM(ExecutiveDaily[new_customers])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Marketing Spend",
+            "expression": "DIVIDE(SUM(ExecutiveDaily[marketing_spend]),1000000000)",
+            "formatString": "#,0.0 \"tỷ\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Mục tiêu doanh thu",
+            "expression": "DIVIDE(SUM(ExecutiveDaily[target_revenue]),1000000000)",
+            "formatString": "#,0.0 \"tỷ\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Tiến độ mục tiêu",
+            "expression": "DIVIDE([Doanh thu thuần],[Mục tiêu doanh thu])",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ExecutiveDaily",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\executive_daily.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"event_date_utc\", \"business_line\", \"gross_value\", \"net_revenue\", \"variable_cost\", \"contribution_margin\", \"refund_value\", \"transactions\", \"paying_customers_line\", \"new_customers\", \"marketing_spend\", \"target_revenue\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"event_date_utc\", type datetimezone}, {\"business_line\", type text}, {\"gross_value\", type number}, {\"net_revenue\", type number}, {\"variable_cost\", type number}, {\"contribution_margin\", type number}, {\"refund_value\", type number}, {\"transactions\", Int64.Type}, {\"paying_customers_line\", Int64.Type}, {\"new_customers\", Int64.Type}, {\"marketing_spend\", type number}, {\"target_revenue\", type number}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "StreamingRealtime",
+        "description": "Governed Gold export: streaming_realtime.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "event_time_utc",
+            "dataType": "dateTime",
+            "sourceColumn": "event_time_utc",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "event_date_utc",
+            "dataType": "dateTime",
+            "sourceColumn": "event_date_utc",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "device_type",
+            "dataType": "string",
+            "sourceColumn": "device_type",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "region",
+            "dataType": "string",
+            "sourceColumn": "region",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "concurrent_viewers",
+            "dataType": "int64",
+            "sourceColumn": "concurrent_viewers",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "watch_hours",
+            "dataType": "decimal",
+            "sourceColumn": "watch_hours",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "play_starts",
+            "dataType": "int64",
+            "sourceColumn": "play_starts",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "completions",
+            "dataType": "int64",
+            "sourceColumn": "completions",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "total_sessions",
+            "dataType": "int64",
+            "sourceColumn": "total_sessions",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "rebuffer_events",
+            "dataType": "int64",
+            "sourceColumn": "rebuffer_events",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "start_failures",
+            "dataType": "int64",
+            "sourceColumn": "start_failures",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "subscription_conversions",
+            "dataType": "int64",
+            "sourceColumn": "subscription_conversions",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "measures": [
+          {
+            "name": "Concurrent Viewers",
+            "expression": "VAR T=MAX(StreamingRealtime[event_time_utc]) RETURN CALCULATE(SUM(StreamingRealtime[concurrent_viewers]),StreamingRealtime[event_time_utc]=T)",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Watch Hours",
+            "expression": "SUM(StreamingRealtime[watch_hours])",
+            "formatString": "#,0.0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Play Starts",
+            "expression": "SUM(StreamingRealtime[play_starts])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Streaming Completions",
+            "expression": "SUM(StreamingRealtime[completions])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Completion Rate",
+            "expression": "DIVIDE([Streaming Completions],[Play Starts])",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Streaming Sessions",
+            "expression": "SUM(StreamingRealtime[total_sessions])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Rebuffer Ratio",
+            "expression": "DIVIDE(SUM(StreamingRealtime[rebuffer_events]),[Streaming Sessions])",
+            "formatString": "0.00%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Video Start Failure",
+            "expression": "DIVIDE(SUM(StreamingRealtime[start_failures]),[Streaming Sessions])",
+            "formatString": "0.00%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Streaming Conversion",
+            "expression": "DIVIDE(SUM(StreamingRealtime[subscription_conversions]),[Streaming Sessions])",
+            "formatString": "0.00%",
+            "displayFolder": "Dashboard"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "StreamingRealtime",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\streaming_realtime.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"event_time_utc\", \"event_date_utc\", \"device_type\", \"region\", \"concurrent_viewers\", \"watch_hours\", \"play_starts\", \"completions\", \"total_sessions\", \"rebuffer_events\", \"start_failures\", \"subscription_conversions\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"event_time_utc\", type datetimezone}, {\"event_date_utc\", type datetimezone}, {\"device_type\", type text}, {\"region\", type text}, {\"concurrent_viewers\", Int64.Type}, {\"watch_hours\", type number}, {\"play_starts\", Int64.Type}, {\"completions\", Int64.Type}, {\"total_sessions\", Int64.Type}, {\"rebuffer_events\", Int64.Type}, {\"start_failures\", Int64.Type}, {\"subscription_conversions\", Int64.Type}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "ProgramEvent",
+        "description": "Governed Gold export: program_event.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "program_id",
+            "dataType": "string",
+            "sourceColumn": "program_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "program_name",
+            "dataType": "string",
+            "sourceColumn": "program_name",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "program_type",
+            "dataType": "string",
+            "sourceColumn": "program_type",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "region",
+            "dataType": "string",
+            "sourceColumn": "region",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "event_date_utc",
+            "dataType": "dateTime",
+            "sourceColumn": "event_date_utc",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "capacity",
+            "dataType": "int64",
+            "sourceColumn": "capacity",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "tickets_sold",
+            "dataType": "int64",
+            "sourceColumn": "tickets_sold",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ticket_gmv",
+            "dataType": "decimal",
+            "sourceColumn": "ticket_gmv",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "service_fee",
+            "dataType": "decimal",
+            "sourceColumn": "service_fee",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "sponsor_revenue",
+            "dataType": "decimal",
+            "sourceColumn": "sponsor_revenue",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "refund_value",
+            "dataType": "decimal",
+            "sourceColumn": "refund_value",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "variable_cost",
+            "dataType": "decimal",
+            "sourceColumn": "variable_cost",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "fixed_cost",
+            "dataType": "decimal",
+            "sourceColumn": "fixed_cost",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "contribution_margin",
+            "dataType": "decimal",
+            "sourceColumn": "contribution_margin",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "attendees",
+            "dataType": "int64",
+            "sourceColumn": "attendees",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "no_shows",
+            "dataType": "int64",
+            "sourceColumn": "no_shows",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "new_customers",
+            "dataType": "int64",
+            "sourceColumn": "new_customers",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "member_conversions",
+            "dataType": "int64",
+            "sourceColumn": "member_conversions",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "sales_pace_index",
+            "dataType": "double",
+            "sourceColumn": "sales_pace_index",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "break_even_progress",
+            "dataType": "double",
+            "sourceColumn": "break_even_progress",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "forecast_margin_rate",
+            "dataType": "double",
+            "sourceColumn": "forecast_margin_rate",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "program_status",
+            "dataType": "string",
+            "sourceColumn": "program_status",
+            "summarizeBy": "none",
+            "isHidden": false
+          }
+        ],
+        "measures": [
+          {
+            "name": "Số chương trình",
+            "expression": "DISTINCTCOUNT(ProgramEvent[program_id])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Sức chứa",
+            "expression": "SUM(ProgramEvent[capacity])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Vé đã bán",
+            "expression": "SUM(ProgramEvent[tickets_sold])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Sell-through Rate",
+            "expression": "DIVIDE([Vé đã bán],[Sức chứa])",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Ticket GMV",
+            "expression": "DIVIDE(SUM(ProgramEvent[ticket_gmv]),1000000000)",
+            "formatString": "#,0.0 \"tỷ\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Doanh thu sự kiện",
+            "expression": "DIVIDE(SUM(ProgramEvent[ticket_gmv])+SUM(ProgramEvent[service_fee])+SUM(ProgramEvent[sponsor_revenue])-SUM(ProgramEvent[refund_value]),1000000000)",
+            "formatString": "#,0.0 \"tỷ\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Event Contribution Margin",
+            "expression": "DIVIDE(SUM(ProgramEvent[contribution_margin]),1000000000)",
+            "formatString": "#,0.0 \"tỷ\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Event Margin %",
+            "expression": "DIVIDE([Event Contribution Margin],[Doanh thu sự kiện])",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Khách tham gia",
+            "expression": "SUM(ProgramEvent[attendees])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "No-show Rate",
+            "expression": "DIVIDE(SUM(ProgramEvent[no_shows]),SUM(ProgramEvent[attendees])+SUM(ProgramEvent[no_shows]))",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Sales Pace Index",
+            "expression": "AVERAGE(ProgramEvent[sales_pace_index])",
+            "formatString": "0.00",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Tiến độ hòa vốn",
+            "expression": "DIVIDE(SUM(ProgramEvent[contribution_margin]),SUM(ProgramEvent[fixed_cost]))",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Chương trình đạt kế hoạch",
+            "expression": "CALCULATE([Số chương trình],ProgramEvent[program_status]=\"Đúng kế hoạch\")",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Tỷ lệ đạt kế hoạch",
+            "expression": "DIVIDE([Chương trình đạt kế hoạch],[Số chương trình])",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Member Conversions",
+            "expression": "SUM(ProgramEvent[member_conversions])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Màu trạng thái chương trình",
+            "expression": "SWITCH(SELECTEDVALUE(ProgramEvent[program_status]), \"Đúng kế hoạch\", \"#34D399\", \"Cần theo dõi\", \"#FBBF24\", \"Có rủi ro\", \"#FB923C\", \"Nghiêm trọng\", \"#F87171\", BLANK())",
+            "displayFolder": "Formatting"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ProgramEvent",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\program_event.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"program_id\", \"program_name\", \"program_type\", \"region\", \"event_date_utc\", \"capacity\", \"tickets_sold\", \"ticket_gmv\", \"service_fee\", \"sponsor_revenue\", \"refund_value\", \"variable_cost\", \"fixed_cost\", \"contribution_margin\", \"attendees\", \"no_shows\", \"new_customers\", \"member_conversions\", \"sales_pace_index\", \"break_even_progress\", \"forecast_margin_rate\", \"program_status\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"program_id\", type text}, {\"program_name\", type text}, {\"program_type\", type text}, {\"region\", type text}, {\"event_date_utc\", type datetimezone}, {\"capacity\", Int64.Type}, {\"tickets_sold\", Int64.Type}, {\"ticket_gmv\", type number}, {\"service_fee\", type number}, {\"sponsor_revenue\", type number}, {\"refund_value\", type number}, {\"variable_cost\", type number}, {\"fixed_cost\", type number}, {\"contribution_margin\", type number}, {\"attendees\", Int64.Type}, {\"no_shows\", Int64.Type}, {\"new_customers\", Int64.Type}, {\"member_conversions\", Int64.Type}, {\"sales_pace_index\", type number}, {\"break_even_progress\", type number}, {\"forecast_margin_rate\", type number}, {\"program_status\", type text}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "EventSalesPace",
+        "description": "Governed Gold export: event_sales_pace.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "program_id",
+            "dataType": "string",
+            "sourceColumn": "program_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "event_date_utc",
+            "dataType": "dateTime",
+            "sourceColumn": "event_date_utc",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "lead_day",
+            "dataType": "int64",
+            "sourceColumn": "lead_day",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "actual_cumulative_tickets",
+            "dataType": "int64",
+            "sourceColumn": "actual_cumulative_tickets",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "plan_cumulative_tickets",
+            "dataType": "int64",
+            "sourceColumn": "plan_cumulative_tickets",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "forecast_cumulative_tickets",
+            "dataType": "int64",
+            "sourceColumn": "forecast_cumulative_tickets",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "measures": [
+          {
+            "name": "Vé tích lũy thực tế",
+            "expression": "SUM(EventSalesPace[actual_cumulative_tickets])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Vé tích lũy kế hoạch",
+            "expression": "SUM(EventSalesPace[plan_cumulative_tickets])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Vé forecast",
+            "expression": "SUM(EventSalesPace[forecast_cumulative_tickets])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "EventSalesPace",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\event_sales_pace.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"program_id\", \"event_date_utc\", \"lead_day\", \"actual_cumulative_tickets\", \"plan_cumulative_tickets\", \"forecast_cumulative_tickets\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"program_id\", type text}, {\"event_date_utc\", type datetimezone}, {\"lead_day\", Int64.Type}, {\"actual_cumulative_tickets\", Int64.Type}, {\"plan_cumulative_tickets\", Int64.Type}, {\"forecast_cumulative_tickets\", Int64.Type}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "EventSalesDetail",
+        "description": "Governed Gold export: event_sales_detail.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "program_id",
+            "dataType": "string",
+            "sourceColumn": "program_id",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "event_date_utc",
+            "dataType": "dateTime",
+            "sourceColumn": "event_date_utc",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "channel",
+            "dataType": "string",
+            "sourceColumn": "channel",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "ticket_tier",
+            "dataType": "string",
+            "sourceColumn": "ticket_tier",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "inventory",
+            "dataType": "int64",
+            "sourceColumn": "inventory",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "sold_tickets",
+            "dataType": "int64",
+            "sourceColumn": "sold_tickets",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "event_views",
+            "dataType": "int64",
+            "sourceColumn": "event_views",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "seat_selections",
+            "dataType": "int64",
+            "sourceColumn": "seat_selections",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "payment_attempts",
+            "dataType": "int64",
+            "sourceColumn": "payment_attempts",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "completed_orders",
+            "dataType": "int64",
+            "sourceColumn": "completed_orders",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "net_revenue",
+            "dataType": "decimal",
+            "sourceColumn": "net_revenue",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "marketing_cost",
+            "dataType": "decimal",
+            "sourceColumn": "marketing_cost",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "measures": [
+          {
+            "name": "Tổng Inventory",
+            "expression": "SUM(EventSalesDetail[inventory])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Vé bán chi tiết",
+            "expression": "SUM(EventSalesDetail[sold_tickets])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Event Views",
+            "expression": "SUM(EventSalesDetail[event_views])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Seat Selections",
+            "expression": "SUM(EventSalesDetail[seat_selections])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Payment Attempts",
+            "expression": "SUM(EventSalesDetail[payment_attempts])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Completed Orders",
+            "expression": "SUM(EventSalesDetail[completed_orders])",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Funnel Conversion",
+            "expression": "DIVIDE([Completed Orders],[Event Views])",
+            "formatString": "0.0%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Sales Net Revenue",
+            "expression": "DIVIDE(SUM(EventSalesDetail[net_revenue]),1000000000)",
+            "formatString": "#,0.0 \"tỷ\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Sales Marketing Cost",
+            "expression": "DIVIDE(SUM(EventSalesDetail[marketing_cost]),1000000000)",
+            "formatString": "#,0.0 \"tỷ\"",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "ROAS",
+            "expression": "DIVIDE([Sales Net Revenue],[Sales Marketing Cost])",
+            "formatString": "0.00",
+            "displayFolder": "Dashboard"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "EventSalesDetail",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\event_sales_detail.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"program_id\", \"event_date_utc\", \"channel\", \"ticket_tier\", \"inventory\", \"sold_tickets\", \"event_views\", \"seat_selections\", \"payment_attempts\", \"completed_orders\", \"net_revenue\", \"marketing_cost\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"program_id\", type text}, {\"event_date_utc\", type datetimezone}, {\"channel\", type text}, {\"ticket_tier\", type text}, {\"inventory\", Int64.Type}, {\"sold_tickets\", Int64.Type}, {\"event_views\", Int64.Type}, {\"seat_selections\", Int64.Type}, {\"payment_attempts\", Int64.Type}, {\"completed_orders\", Int64.Type}, {\"net_revenue\", type number}, {\"marketing_cost\", type number}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "OperationsRealtime",
+        "description": "Governed Gold export: operations_realtime.csv. Definitions: docs/gold-metric-definitions.md.",
+        "columns": [
+          {
+            "name": "event_time_utc",
+            "dataType": "dateTime",
+            "sourceColumn": "event_time_utc",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "event_date_utc",
+            "dataType": "dateTime",
+            "sourceColumn": "event_date_utc",
+            "summarizeBy": "none",
+            "isHidden": false,
+            "formatString": "dd/MM/yyyy HH:mm"
+          },
+          {
+            "name": "service_name",
+            "dataType": "string",
+            "sourceColumn": "service_name",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "requests_per_second",
+            "dataType": "int64",
+            "sourceColumn": "requests_per_second",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "p95_latency_ms",
+            "dataType": "double",
+            "sourceColumn": "p95_latency_ms",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "error_rate",
+            "dataType": "double",
+            "sourceColumn": "error_rate",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "queue_depth",
+            "dataType": "int64",
+            "sourceColumn": "queue_depth",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "throughput_per_minute",
+            "dataType": "int64",
+            "sourceColumn": "throughput_per_minute",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "data_lag_seconds",
+            "dataType": "double",
+            "sourceColumn": "data_lag_seconds",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "status",
+            "dataType": "string",
+            "sourceColumn": "status",
+            "summarizeBy": "none",
+            "isHidden": false
+          }
+        ],
+        "measures": [
+          {
+            "name": "P95 Latency cao nhất",
+            "expression": "MAX(OperationsRealtime[p95_latency_ms])",
+            "formatString": "#,0 ms",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Trạng thái hiện tại",
+            "expression": "VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN IF(CALCULATE(COUNTROWS(OperationsRealtime),OperationsRealtime[event_time_utc]=T,OperationsRealtime[status]=\"Cảnh báo\")>0,\"Cảnh báo\",\"Ổn định\")",
+            "formatString": "",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Current RPS",
+            "expression": "VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN CALCULATE(SUM(OperationsRealtime[requests_per_second]),OperationsRealtime[event_time_utc]=T)",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "P95 Latency",
+            "expression": "VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN CALCULATE(MAX(OperationsRealtime[p95_latency_ms]),OperationsRealtime[event_time_utc]=T)",
+            "formatString": "#,0 ms",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Error Rate",
+            "expression": "VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN CALCULATE(DIVIDE(SUMX(OperationsRealtime,OperationsRealtime[error_rate]*OperationsRealtime[requests_per_second]),SUM(OperationsRealtime[requests_per_second])),OperationsRealtime[event_time_utc]=T)",
+            "formatString": "0.00%",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Queue Depth",
+            "expression": "VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN CALCULATE(SUM(OperationsRealtime[queue_depth]),OperationsRealtime[event_time_utc]=T)",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Throughput / phút",
+            "expression": "VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN CALCULATE(SUM(OperationsRealtime[throughput_per_minute]),OperationsRealtime[event_time_utc]=T)",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Data Lag",
+            "expression": "VAR T=MAX(OperationsRealtime[event_time_utc]) RETURN CALCULATE(MAX(OperationsRealtime[data_lag_seconds]),OperationsRealtime[event_time_utc]=T)",
+            "formatString": "#,0.0 s",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Dịch vụ cảnh báo",
+            "expression": "CALCULATE(DISTINCTCOUNT(OperationsRealtime[service_name]),OperationsRealtime[status]=\"Cảnh báo\")",
+            "formatString": "#,0",
+            "displayFolder": "Dashboard"
+          },
+          {
+            "name": "Màu trạng thái dịch vụ",
+            "expression": "SWITCH([Trạng thái hiện tại], \"Ổn định\", \"#34D399\", \"Cảnh báo\", \"#F87171\", BLANK())",
+            "displayFolder": "Formatting"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "OperationsRealtime",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataRoot & \"\\operations_realtime.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    Selected = Table.SelectColumns(Headers, {\"event_time_utc\", \"event_date_utc\", \"service_name\", \"requests_per_second\", \"p95_latency_ms\", \"error_rate\", \"queue_depth\", \"throughput_per_minute\", \"data_lag_seconds\", \"status\"}),\n    Typed = Table.TransformColumnTypes(Selected, {{\"event_time_utc\", type datetimezone}, {\"event_date_utc\", type datetimezone}, {\"service_name\", type text}, {\"requests_per_second\", Int64.Type}, {\"p95_latency_ms\", type number}, {\"error_rate\", type number}, {\"queue_depth\", Int64.Type}, {\"throughput_per_minute\", Int64.Type}, {\"data_lag_seconds\", type number}, {\"status\", type text}}, \"en-US\")\nin\n    Typed"
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "Date_ContentEngagement",
+        "fromTable": "ContentEngagement",
+        "fromColumn": "event_date_utc",
+        "toTable": "Date",
+        "toColumn": "date",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Date_BookingFunnel",
+        "fromTable": "BookingFunnel",
+        "fromColumn": "event_date_utc",
+        "toTable": "Date",
+        "toColumn": "date",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Date_SubscriptionDaily",
+        "fromTable": "SubscriptionDaily",
+        "fromColumn": "event_date_utc",
+        "toTable": "Date",
+        "toColumn": "date",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Date_ExecutiveDaily",
+        "fromTable": "ExecutiveDaily",
+        "fromColumn": "event_date_utc",
+        "toTable": "Date",
+        "toColumn": "date",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Date_StreamingRealtime",
+        "fromTable": "StreamingRealtime",
+        "fromColumn": "event_date_utc",
+        "toTable": "Date",
+        "toColumn": "date",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Date_ProgramEvent",
+        "fromTable": "ProgramEvent",
+        "fromColumn": "event_date_utc",
+        "toTable": "Date",
+        "toColumn": "date",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Date_OperationsRealtime",
+        "fromTable": "OperationsRealtime",
+        "fromColumn": "event_date_utc",
+        "toTable": "Date",
+        "toColumn": "date",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Date_CustomerActivity",
+        "fromTable": "CustomerActivity",
+        "fromColumn": "event_date_utc",
+        "toTable": "Date",
+        "toColumn": "date",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Customer360_CustomerActivity",
+        "fromTable": "CustomerActivity",
+        "fromColumn": "customer_id",
+        "toTable": "Customer360",
+        "toColumn": "customer_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Customer360_CustomerAffinity",
+        "fromTable": "CustomerAffinity",
+        "fromColumn": "customer_id",
+        "toTable": "Customer360",
+        "toColumn": "customer_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "ProgramEvent_EventSalesPace",
+        "fromTable": "EventSalesPace",
+        "fromColumn": "program_id",
+        "toTable": "ProgramEvent",
+        "toColumn": "program_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "ProgramEvent_EventSalesDetail",
+        "fromTable": "EventSalesDetail",
+        "fromColumn": "program_id",
+        "toTable": "ProgramEvent",
+        "toColumn": "program_id",
+        "crossFilteringBehavior": "oneDirection"
+      }
+    ]
+  }
+}

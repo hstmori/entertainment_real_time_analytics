@@ -1,0 +1,139 @@
+/// Governed Gold export: subscription_daily.csv. Definitions: docs/gold-metric-definitions.md.
+table SubscriptionDaily
+	lineageTag: b6136006-71ab-4624-b1fb-68736c419baa
+
+	measure 'Sự kiện subscription' = SUM(SubscriptionDaily[subscription_events])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 9131cca0-432c-4e68-9f4e-364dbc5b1723
+
+	measure 'Đăng ký mới' = SUM(SubscriptionDaily[started_events])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: f225aef4-5f15-4810-a8af-2778a7f9f375
+
+	measure 'Gia hạn' = SUM(SubscriptionDaily[renewed_events])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 58a6850b-b52e-4dfa-a152-3aacbedbab6f
+
+	measure 'Hủy subscription' = SUM(SubscriptionDaily[cancelled_events])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: de65bbdf-a205-414c-a544-35fd7d983470
+
+	measure 'MRR event value proxy' = SUM(SubscriptionDaily[mrr_event_value_proxy])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: fb156e47-152f-4c9a-bb28-7fd95e30c328
+
+	column event_date_utc
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 13ee2dae-332a-4435-b327-6e89ffd04d13
+		summarizeBy: none
+		sourceColumn: event_date_utc
+
+	column plan_id
+		dataType: string
+		lineageTag: fb1e7ebf-fe1d-4228-880d-3b84cbefc968
+		summarizeBy: none
+		sourceColumn: plan_id
+
+	column currency
+		dataType: string
+		lineageTag: 27ac32ae-2f84-44c2-967f-c40b70918d23
+		summarizeBy: none
+		sourceColumn: currency
+
+	column subscription_events
+		dataType: int64
+		isHidden
+		lineageTag: e61473f4-1bc0-4785-b39f-f6e53a52da68
+		summarizeBy: none
+		sourceColumn: subscription_events
+
+	column started_events
+		dataType: int64
+		isHidden
+		lineageTag: 5724e89c-48f4-457c-8b12-793075696415
+		summarizeBy: none
+		sourceColumn: started_events
+
+	column renewed_events
+		dataType: int64
+		isHidden
+		lineageTag: 9e47403c-eee1-428f-b787-82b74a6b59da
+		summarizeBy: none
+		sourceColumn: renewed_events
+
+	column upgraded_events
+		dataType: int64
+		isHidden
+		lineageTag: a9a851e4-4de9-4c60-9c39-b424aaa19fe1
+		summarizeBy: none
+		sourceColumn: upgraded_events
+
+	column downgraded_events
+		dataType: int64
+		isHidden
+		lineageTag: 73075c16-554c-4613-9e66-2f4ec0c4c6b9
+		summarizeBy: none
+		sourceColumn: downgraded_events
+
+	column paused_events
+		dataType: int64
+		isHidden
+		lineageTag: 2afb59dd-a2ff-426b-96f8-725ccb554037
+		summarizeBy: none
+		sourceColumn: paused_events
+
+	column cancelled_events
+		dataType: int64
+		isHidden
+		lineageTag: 33b538aa-b540-4bca-98ae-c0b25b474420
+		summarizeBy: none
+		sourceColumn: cancelled_events
+
+	column expired_events
+		dataType: int64
+		isHidden
+		lineageTag: 9e975966-3c45-445f-9906-62eb34ab5f0e
+		summarizeBy: none
+		sourceColumn: expired_events
+
+	column mrr_event_value_proxy
+		dataType: double
+		isHidden
+		lineageTag: 954b7887-2ec4-4208-940f-f357e2403ee3
+		summarizeBy: sum
+		sourceColumn: mrr_event_value_proxy
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column cancelled_value_context
+		dataType: double
+		isHidden
+		lineageTag: 8241204e-ea3d-413d-b043-cb1fe35bb077
+		summarizeBy: sum
+		sourceColumn: cancelled_value_context
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition SubscriptionDaily = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\subscription_daily.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"event_date_utc", "plan_id", "currency", "subscription_events", "started_events", "renewed_events", "upgraded_events", "downgraded_events", "paused_events", "cancelled_events", "expired_events", "mrr_event_value_proxy", "cancelled_value_context"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"event_date_utc", type datetimezone}, {"plan_id", type text}, {"currency", type text}, {"subscription_events", Int64.Type}, {"started_events", Int64.Type}, {"renewed_events", Int64.Type}, {"upgraded_events", Int64.Type}, {"downgraded_events", Int64.Type}, {"paused_events", Int64.Type}, {"cancelled_events", Int64.Type}, {"expired_events", Int64.Type}, {"mrr_event_value_proxy", type number}, {"cancelled_value_context", type number}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

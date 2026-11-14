@@ -1,0 +1,59 @@
+/// Governed Gold export: customer_affinity.csv. Definitions: docs/gold-metric-definitions.md.
+table CustomerAffinity
+	lineageTag: c0bdd31e-d0d6-4adf-8ad0-2c8446760003
+
+	measure 'Affinity Score' = AVERAGE(CustomerAffinity[affinity_score])
+		formatString: 0.0
+		displayFolder: Dashboard
+		lineageTag: e3c508c3-3a22-4d5e-a771-76e7b8bfa8d5
+
+	column customer_id
+		dataType: string
+		lineageTag: 93306d75-a6da-4280-b67f-3635c0eb2002
+		summarizeBy: none
+		sourceColumn: customer_id
+
+	column affinity_name
+		dataType: string
+		lineageTag: 5739486f-2c55-4bbd-9abb-e3e310a301d5
+		summarizeBy: none
+		sourceColumn: affinity_name
+
+	column affinity_score
+		dataType: double
+		isHidden
+		lineageTag: 8530b5ef-8f57-4cff-95f2-d5ee47d2f7d3
+		summarizeBy: none
+		sourceColumn: affinity_score
+
+	column affinity_rank
+		dataType: int64
+		lineageTag: 11e6ce42-95ac-4ab9-91e7-ef73d5eb67d2
+		summarizeBy: none
+		sourceColumn: affinity_rank
+
+	column affinity_color
+		dataType: string
+		lineageTag: 254a1a91-0182-44b5-899f-7d6fa6df5723
+		summarizeBy: none
+		sourceColumn: affinity_color
+
+	column is_preferred
+		dataType: boolean
+		lineageTag: 08840b99-9004-42b6-b7ab-3c2bd372eb21
+		summarizeBy: none
+		sourceColumn: is_preferred
+
+	partition CustomerAffinity = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\customer_affinity.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"customer_id", "affinity_name", "affinity_score", "affinity_rank", "affinity_color", "is_preferred"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"customer_id", type text}, {"affinity_name", type text}, {"affinity_score", type number}, {"affinity_rank", Int64.Type}, {"affinity_color", type text}, {"is_preferred", type logical}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

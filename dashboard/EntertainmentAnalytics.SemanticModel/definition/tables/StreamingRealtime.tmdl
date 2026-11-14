@@ -1,0 +1,148 @@
+/// Governed Gold export: streaming_realtime.csv. Definitions: docs/gold-metric-definitions.md.
+table StreamingRealtime
+	lineageTag: a24ce444-e970-4ab9-a63f-be200a312e1f
+
+	measure 'Concurrent Viewers' = VAR T=MAX(StreamingRealtime[event_time_utc]) RETURN CALCULATE(SUM(StreamingRealtime[concurrent_viewers]),StreamingRealtime[event_time_utc]=T)
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 8bd7db42-605a-42ed-a7a9-fe3e0c73409c
+
+	measure 'Watch Hours' = SUM(StreamingRealtime[watch_hours])
+		formatString: #,0.0
+		displayFolder: Dashboard
+		lineageTag: 3e3fdd75-76f9-411e-8aec-a70de6bb4fa4
+
+	measure 'Play Starts' = SUM(StreamingRealtime[play_starts])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: d01ab85f-172c-44c2-b3ed-d57fc0674839
+
+	measure 'Streaming Completions' = SUM(StreamingRealtime[completions])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 44f270d5-6c71-4667-ab62-3c9a334bbb62
+
+	measure 'Completion Rate' = DIVIDE([Streaming Completions],[Play Starts])
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: 7d544cc7-3e24-43b3-9c7d-74550bd3e34a
+
+	measure 'Streaming Sessions' = SUM(StreamingRealtime[total_sessions])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 2a858c88-d96c-4cd9-af2d-ad04b551d77f
+
+	measure 'Rebuffer Ratio' = DIVIDE(SUM(StreamingRealtime[rebuffer_events]),[Streaming Sessions])
+		formatString: 0.00%
+		displayFolder: Dashboard
+		lineageTag: 0e085bd5-f06a-4961-92f5-bead36b3c678
+
+	measure 'Video Start Failure' = DIVIDE(SUM(StreamingRealtime[start_failures]),[Streaming Sessions])
+		formatString: 0.00%
+		displayFolder: Dashboard
+		lineageTag: beb13a1a-c6d4-47fe-98cb-e22b2d69f75b
+
+	measure 'Streaming Conversion' = DIVIDE(SUM(StreamingRealtime[subscription_conversions]),[Streaming Sessions])
+		formatString: 0.00%
+		displayFolder: Dashboard
+		lineageTag: 635f1d10-21b1-4475-a943-1d9fa89e572f
+
+	column event_time_utc
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 210fd94c-8802-4466-a531-c51953b24f2e
+		summarizeBy: none
+		sourceColumn: event_time_utc
+
+	column event_date_utc
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: b0eb90b2-f316-4e3c-9cab-35237a887178
+		summarizeBy: none
+		sourceColumn: event_date_utc
+
+	column device_type
+		dataType: string
+		lineageTag: ced8fe8d-17fc-471f-b558-bf2839bc8d12
+		summarizeBy: none
+		sourceColumn: device_type
+
+	column region
+		dataType: string
+		lineageTag: 479457e5-8485-43b0-895a-94a321209b51
+		summarizeBy: none
+		sourceColumn: region
+
+	column concurrent_viewers
+		dataType: int64
+		isHidden
+		lineageTag: 97d7ae04-4c74-4b92-b86c-a86afd595cbd
+		summarizeBy: none
+		sourceColumn: concurrent_viewers
+
+	column watch_hours
+		dataType: double
+		isHidden
+		lineageTag: 47ba7ec4-3187-425b-af52-9f6120759013
+		summarizeBy: sum
+		sourceColumn: watch_hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column play_starts
+		dataType: int64
+		isHidden
+		lineageTag: 60b9b6dd-668e-48a6-b24b-7f93bcadae3e
+		summarizeBy: none
+		sourceColumn: play_starts
+
+	column completions
+		dataType: int64
+		isHidden
+		lineageTag: b32ac3e8-292e-47db-8a43-12abea0ea919
+		summarizeBy: none
+		sourceColumn: completions
+
+	column total_sessions
+		dataType: int64
+		isHidden
+		lineageTag: 62dd613d-495b-49f2-849e-619715a5b8f9
+		summarizeBy: none
+		sourceColumn: total_sessions
+
+	column rebuffer_events
+		dataType: int64
+		isHidden
+		lineageTag: d4ca3d95-8a34-4eea-a76f-5a2140eeae6a
+		summarizeBy: none
+		sourceColumn: rebuffer_events
+
+	column start_failures
+		dataType: int64
+		isHidden
+		lineageTag: 35fc0cd3-ec1a-44c7-8cb8-6e2e1322473d
+		summarizeBy: none
+		sourceColumn: start_failures
+
+	column subscription_conversions
+		dataType: int64
+		isHidden
+		lineageTag: 5643b891-08ea-4231-8348-3d88da7c0d38
+		summarizeBy: none
+		sourceColumn: subscription_conversions
+
+	partition StreamingRealtime = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\streaming_realtime.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"event_time_utc", "event_date_utc", "device_type", "region", "concurrent_viewers", "watch_hours", "play_starts", "completions", "total_sessions", "rebuffer_events", "start_failures", "subscription_conversions"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"event_time_utc", type datetimezone}, {"event_date_utc", type datetimezone}, {"device_type", type text}, {"region", type text}, {"concurrent_viewers", Int64.Type}, {"watch_hours", type number}, {"play_starts", Int64.Type}, {"completions", Int64.Type}, {"total_sessions", Int64.Type}, {"rebuffer_events", Int64.Type}, {"start_failures", Int64.Type}, {"subscription_conversions", Int64.Type}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,24 @@
+/// Governed Gold export: date.csv. Definitions: docs/gold-metric-definitions.md.
+table Date
+	lineageTag: c9f6101c-95a2-4dd6-9f07-9d550d3adb0c
+
+	column date
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 9b338285-3e4b-4908-aeb3-b1f429bd704e
+		summarizeBy: none
+		sourceColumn: date
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\date.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"date"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"date", type datetimezone}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

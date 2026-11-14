@@ -1,0 +1,11 @@
+metric_type,member_rank,member_rank_order,member_rank_color,metric_value,metric_share,customer_count,net_spend_12m
+Tỷ lệ khách hàng,Diamond,1,#20D9E8,19,0.095,19,302205182
+Tỷ lệ khách hàng,Platinum,2,#D9E2EC,41,0.205,41,292805342
+Tỷ lệ khách hàng,Gold,3,#F5C451,84,0.42,84,276778978
+Tỷ lệ khách hàng,Silver,4,#94A3B8,44,0.22,44,57186993
+Tỷ lệ khách hàng,Basic,5,#4B5563,12,0.06,12,2412022
+Tỷ lệ chi tiêu,Diamond,1,#20D9E8,302205182,0.324467,19,302205182
+Tỷ lệ chi tiêu,Platinum,2,#D9E2EC,292805342,0.314375,41,292805342
+Tỷ lệ chi tiêu,Gold,3,#F5C451,276778978,0.297168,84,276778978
+Tỷ lệ chi tiêu,Silver,4,#94A3B8,57186993,0.0614,44,57186993
+Tỷ lệ chi tiêu,Basic,5,#4B5563,2412022,0.00259,12,2412022

@@ -1,0 +1,5 @@
+expression DataRoot = "Y:\Data Analyst\Data Work\Project Analyst\RealTimeDataPipeline_Demo_Package_Github\back\artifacts\powerbi_demo" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: e73cbbb8-a26b-43d9-b634-20843e5ad9ae
+
+	annotation PBI_ResultType = Text
+

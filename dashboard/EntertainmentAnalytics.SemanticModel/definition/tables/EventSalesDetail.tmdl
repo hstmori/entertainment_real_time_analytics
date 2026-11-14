@@ -1,0 +1,156 @@
+/// Governed Gold export: event_sales_detail.csv. Definitions: docs/gold-metric-definitions.md.
+table EventSalesDetail
+	lineageTag: ac9c506a-7eae-4b9d-b4dc-98c608cb8084
+
+	measure 'Tổng Inventory' = SUM(EventSalesDetail[inventory])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: fe78d33e-082a-4250-859d-893518e717d8
+
+	measure 'Vé bán chi tiết' = SUM(EventSalesDetail[sold_tickets])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: d6939192-8a48-413f-92bf-28365073fb8b
+
+	measure 'Event Views' = SUM(EventSalesDetail[event_views])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 84e7c5b5-79a1-4458-9e36-719e769751d3
+
+	measure 'Seat Selections' = SUM(EventSalesDetail[seat_selections])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: a1251db2-4e8f-4753-b5f0-76be45da7e46
+
+	measure 'Payment Attempts' = SUM(EventSalesDetail[payment_attempts])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: ea1f923b-9c1c-4553-bc2c-38ca050b2b88
+
+	measure 'Completed Orders' = SUM(EventSalesDetail[completed_orders])
+		formatString: #,0
+		displayFolder: Dashboard
+		lineageTag: 2cf3bf89-98d2-40e0-8b59-67f53ad6f997
+
+	measure 'Funnel Conversion' = DIVIDE([Completed Orders],[Event Views])
+		formatString: 0.0%
+		displayFolder: Dashboard
+		lineageTag: 4ce9bbfc-e54a-4da3-bcdd-fa4629cd4a6c
+
+	measure 'Sales Net Revenue' = DIVIDE(SUM(EventSalesDetail[net_revenue]),1000000000)
+		formatString: #,0.0 "tỷ"
+		displayFolder: Dashboard
+		lineageTag: 9324d2e4-013c-4755-9b38-879bf19252a6
+
+	measure 'Sales Marketing Cost' = DIVIDE(SUM(EventSalesDetail[marketing_cost]),1000000000)
+		formatString: #,0.0 "tỷ"
+		displayFolder: Dashboard
+		lineageTag: 803d7b1c-8a32-44d7-9069-d469de0d8fc6
+
+	measure ROAS = DIVIDE([Sales Net Revenue],[Sales Marketing Cost])
+		formatString: 0.00
+		displayFolder: Dashboard
+		lineageTag: 2fb4ee25-e602-44ac-92fd-fd0de76bd3c5
+
+	column program_id
+		dataType: string
+		lineageTag: 398060f2-c8c9-4354-a792-0b0ec9386d40
+		summarizeBy: none
+		sourceColumn: program_id
+
+	column event_date_utc
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: cd23a7de-0f41-4d92-9347-00250b222ca2
+		summarizeBy: none
+		sourceColumn: event_date_utc
+
+	column channel
+		dataType: string
+		lineageTag: a01a228e-5792-4edb-af4e-c26580099794
+		summarizeBy: none
+		sourceColumn: channel
+
+	column ticket_tier
+		dataType: string
+		lineageTag: 6b14d0d8-b710-4a73-9672-9c027defb699
+		summarizeBy: none
+		sourceColumn: ticket_tier
+
+	column inventory
+		dataType: int64
+		isHidden
+		lineageTag: 6bace1e2-4a5d-43e5-9166-a5bc8ed5dbaa
+		summarizeBy: none
+		sourceColumn: inventory
+
+	column sold_tickets
+		dataType: int64
+		isHidden
+		lineageTag: 3874c042-e4f5-4c36-a997-57a60e1c13b7
+		summarizeBy: none
+		sourceColumn: sold_tickets
+
+	column event_views
+		dataType: int64
+		isHidden
+		lineageTag: aac44672-1098-45c1-898e-2b03064f7b74
+		summarizeBy: none
+		sourceColumn: event_views
+
+	column seat_selections
+		dataType: int64
+		isHidden
+		lineageTag: 92a89751-94e1-47bf-9950-d2e07be84344
+		summarizeBy: none
+		sourceColumn: seat_selections
+
+	column payment_attempts
+		dataType: int64
+		isHidden
+		lineageTag: 29b2beb3-7204-4286-b20c-6797924ebf7f
+		summarizeBy: none
+		sourceColumn: payment_attempts
+
+	column completed_orders
+		dataType: int64
+		isHidden
+		lineageTag: 626383b4-6782-441f-9d6a-8292fb665a9c
+		summarizeBy: none
+		sourceColumn: completed_orders
+
+	column net_revenue
+		dataType: double
+		isHidden
+		lineageTag: f6cd0056-db68-41cb-86b3-0d726fa9dda2
+		summarizeBy: sum
+		sourceColumn: net_revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column marketing_cost
+		dataType: double
+		isHidden
+		lineageTag: 6a61d383-8cbd-4434-9530-ac0635da1a79
+		summarizeBy: sum
+		sourceColumn: marketing_cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition EventSalesDetail = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataRoot & "\event_sales_detail.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Headers, {"program_id", "event_date_utc", "channel", "ticket_tier", "inventory", "sold_tickets", "event_views", "seat_selections", "payment_attempts", "completed_orders", "net_revenue", "marketing_cost"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"program_id", type text}, {"event_date_utc", type datetimezone}, {"channel", type text}, {"ticket_tier", type text}, {"inventory", Int64.Type}, {"sold_tickets", Int64.Type}, {"event_views", Int64.Type}, {"seat_selections", Int64.Type}, {"payment_attempts", Int64.Type}, {"completed_orders", Int64.Type}, {"net_revenue", type number}, {"marketing_cost", type number}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

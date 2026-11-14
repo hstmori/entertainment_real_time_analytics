@@ -1,0 +1,198 @@
+{
+  "status": "passed",
+  "run_stamp": "20261106T093545Z",
+  "correlation_id": "f7aa0c81-e462-4d42-b530-ee14698b191e",
+  "consumer_group": "entertainment-phase6b-20261106T093545Z",
+  "event_count": 40,
+  "rate_per_second": 10.0,
+  "seed": 1793957745,
+  "base_time": "2026-11-06T09:35:51.196Z",
+  "producer": {
+    "base_time": "2026-11-06T16:35:51.196+07:00",
+    "correlation_id": "f7aa0c81-e462-4d42-b530-ee14698b191e",
+    "delivered": 40,
+    "delivered_by_topic": {
+      "entertainment.booking.v1": 10,
+      "entertainment.event-attendance.v1": 10,
+      "entertainment.subscription.v1": 10,
+      "entertainment.user-activity.v1": 10
+    },
+    "elapsed_seconds": 4.0,
+    "generated": 40,
+    "generated_by_topic": {
+      "entertainment.booking.v1": 10,
+      "entertainment.event-attendance.v1": 10,
+      "entertainment.subscription.v1": 10,
+      "entertainment.user-activity.v1": 10
+    },
+    "seed": 1793957745,
+    "status": "published"
+  },
+  "processor": {
+    "batches": 4,
+    "bronze_schema": "bronze",
+    "consumed": 40,
+    "dlq_delivered": 0,
+    "elapsed_seconds": 10.529,
+    "group_id": "entertainment-phase6b-20261106T093545Z",
+    "invalid": 0,
+    "offset_commits": 33,
+    "silver_schema": "silver",
+    "status": "completed",
+    "valid": 40
+  },
+  "silver_latency": {
+    "arrived_over_sla": 0,
+    "checks": {
+      "expected_count": true,
+      "non_negative_processing_latency": true,
+      "non_negative_query_latency": true,
+      "p95_within_sla": true,
+      "unique_event_ids": true,
+      "unique_source_coordinates": true
+    },
+    "correlation_id": "f7aa0c81-e462-4d42-b530-ee14698b191e",
+    "duplicate_event_ids": 0,
+    "duplicate_source_coordinates": 0,
+    "event_type_counts": {
+      "booking": 10,
+      "event_attendance": 10,
+      "subscription": 10,
+      "user_activity": 10
+    },
+    "expected_count": 40,
+    "negative_processing_latency": 0,
+    "negative_query_latency": 0,
+    "observed_at": "2026-11-06T09:36:00.664Z",
+    "observed_count": 40,
+    "processing_latency_ms": {
+      "max": 3403,
+      "min": 2543,
+      "p50": 2710,
+      "p95": 3308,
+      "p99": 3403
+    },
+    "query_upper_bound_latency_ms": {
+      "max": 9468,
+      "min": 5568,
+      "p50": 7468,
+      "p95": 9268,
+      "p99": 9468
+    },
+    "sla_milliseconds": 60000,
+    "status": "passed"
+  },
+  "gold_refresh": {
+    "row_counts": {
+      "booking_funnel_daily": 29,
+      "content_engagement_hourly": 28,
+      "customer_360": 97,
+      "event_performance": 23,
+      "subscription_daily": 3
+    },
+    "run_id": "9ba433cb-15d6-44ee-9c9a-ae0f862b3e33",
+    "silver_snapshot_rows": 120,
+    "status": "completed"
+  },
+  "gold_query_upper_bound": {
+    "arrived_over_sla": 0,
+    "checks": {
+      "expected_count": true,
+      "non_negative_processing_latency": true,
+      "non_negative_query_latency": true,
+      "p95_within_sla": true,
+      "unique_event_ids": true,
+      "unique_source_coordinates": true
+    },
+    "correlation_id": "f7aa0c81-e462-4d42-b530-ee14698b191e",
+    "duplicate_event_ids": 0,
+    "duplicate_source_coordinates": 0,
+    "event_type_counts": {
+      "booking": 10,
+      "event_attendance": 10,
+      "subscription": 10,
+      "user_activity": 10
+    },
+    "expected_count": 40,
+    "negative_processing_latency": 0,
+    "negative_query_latency": 0,
+    "observed_at": "2026-11-06T09:36:07.935Z",
+    "observed_count": 40,
+    "processing_latency_ms": {
+      "max": 3403,
+      "min": 2543,
+      "p50": 2710,
+      "p95": 3308,
+      "p99": 3403
+    },
+    "query_upper_bound_latency_ms": {
+      "max": 16739,
+      "min": 12839,
+      "p50": 14739,
+      "p95": 16539,
+      "p99": 16739
+    },
+    "sla_milliseconds": 60000,
+    "status": "passed"
+  },
+  "powerbi_export": {
+    "row_counts": {
+      "booking_funnel_daily.csv": 29,
+      "content_engagement_hourly.csv": 28,
+      "customer_360.csv": 97,
+      "date.csv": 1,
+      "event_performance.csv": 23,
+      "refresh_audit.csv": 20,
+      "subscription_daily.csv": 3
+    },
+    "status": "exported"
+  },
+  "export_upper_bound": {
+    "arrived_over_sla": 0,
+    "checks": {
+      "expected_count": true,
+      "non_negative_processing_latency": true,
+      "non_negative_query_latency": true,
+      "p95_within_sla": true,
+      "unique_event_ids": true,
+      "unique_source_coordinates": true
+    },
+    "correlation_id": "f7aa0c81-e462-4d42-b530-ee14698b191e",
+    "duplicate_event_ids": 0,
+    "duplicate_source_coordinates": 0,
+    "event_type_counts": {
+      "booking": 10,
+      "event_attendance": 10,
+      "subscription": 10,
+      "user_activity": 10
+    },
+    "expected_count": 40,
+    "negative_processing_latency": 0,
+    "negative_query_latency": 0,
+    "observed_at": "2026-11-06T09:36:11.989Z",
+    "observed_count": 40,
+    "processing_latency_ms": {
+      "max": 3403,
+      "min": 2543,
+      "p50": 2710,
+      "p95": 3308,
+      "p99": 3403
+    },
+    "query_upper_bound_latency_ms": {
+      "max": 20793,
+      "min": 16893,
+      "p50": 18793,
+      "p95": 20593,
+      "p99": 20793
+    },
+    "sla_milliseconds": 60000,
+    "status": "passed"
+  },
+  "automated_test_output": [
+    "time=\"2026-11-06T16:36:12+07:00\" level=warning msg=\"Found orphan containers (entertainment-phase6b-processor-20261106t093545z) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.\"",
+    " Container entertainment-lakehouse-event-producer-test-run-0aa7d3fe9d8b Creating ",
+    " Container entertainment-lakehouse-event-producer-test-run-0aa7d3fe9d8b Created ",
+    ".................................                                        [100%]",
+    "33 passed in 1.83s"
+  ]
+}

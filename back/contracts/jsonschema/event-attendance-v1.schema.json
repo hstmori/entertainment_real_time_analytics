@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/contracts/event-attendance-v1.schema.json",
+  "title": "Entertainment Event Attendance v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "correlation_id", "event_version", "occurred_at", "source", "attendance_id", "entertainment_event_id", "booking_id", "customer_id", "attendance_status"],
+  "properties": {
+    "event_id": {"type": "string", "format": "uuid"},
+    "correlation_id": {"type": "string", "format": "uuid"},
+    "event_version": {"const": 1},
+    "occurred_at": {"type": "string", "format": "date-time"},
+    "source": {"type": "string", "minLength": 1, "maxLength": 100},
+    "attendance_id": {"type": "string", "minLength": 1, "maxLength": 100},
+    "entertainment_event_id": {"type": "string", "minLength": 1, "maxLength": 100},
+    "booking_id": {"type": "string", "minLength": 1, "maxLength": 100},
+    "customer_id": {"type": "string", "minLength": 1, "maxLength": 100},
+    "attendance_status": {"type": "string", "enum": ["checked_in", "rejected", "no_show"]},
+    "gate_id": {"type": ["string", "null"], "maxLength": 100},
+    "ticket_id": {"type": ["string", "null"], "maxLength": 100}
+  }
+}
+
